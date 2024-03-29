@@ -1,3 +1,6 @@
 # ignore all .txt files
 *.txt
 
+# ignore all .nop (not operational) files
+*.nop
+
