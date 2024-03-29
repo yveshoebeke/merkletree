@@ -1,0 +1,56 @@
+package merkletree
+
+import (
+	"slices"
+)
+
+func (ms *MerkleServer) processRequest() error {
+	var (
+		leaves  [][]byte = *ms.leaves
+		started bool     = false
+		index   int
+	)
+
+	// This could be removed.. TBD
+	if ms.InitWithEncoding {
+		for i := range leaves {
+			leaves[i] = ms.hashGenerator(leaves[i])
+		}
+	}
+
+	for {
+		// One remaining: Exit loop. Merkle tree root made.
+		// Note: if initial data set is only 1 element, will continue
+		//	so as to adhere to the Merkle tree discipline.
+		if started && len(leaves) == 1 {
+			break
+		}
+		started = true
+		//  Adjust for odd number of leaves.
+		//	- ie:
+		//		[1] [2] [3] => [1] [2] [3] [3]
+		if len(leaves)%2 == 1 {
+			leaves = append(leaves, leaves[len(leaves)-1])
+		}
+		// Create combined (concatenated) hash of left and right (in couple),
+		//	transform with requested algorithm (hash), and
+		// 	store it in left and zero out right.
+		//	- ie:
+		// 		[1] [2] [3] [4] => [12] [0] [34] [0]
+		for index = 0; index < len(leaves); index += 2 {
+			leaves[index] = ms.hashGenerator(append(leaves[index][:], leaves[index+1][:]...))
+			leaves[index+1] = []byte{}
+		}
+
+		// Remove elements with '0' byte content and collapse slice.
+		//	- ie:
+		//		[12] [0] [34] [0] => [12] [34]
+		leaves = slices.DeleteFunc(leaves, func(leaf []byte) bool {
+			return len(leaf) == 0
+		})
+	}
+
+	ms.ProcessResult = leaves[0]
+
+	return nil
+}
