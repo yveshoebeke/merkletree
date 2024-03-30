@@ -97,7 +97,8 @@ func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, 
 	}
 
 	// Set process flag
-	initWithEncoding := If(len(processFlags) > 0, processFlags[0], false)
+	// initWithEncoding := If(len(processFlags) > 0, processFlags[0], false)
+	initWithEncoding := false
 
 	// Initialize Merkel pertinents.
 	ms = &MerkleServer{
