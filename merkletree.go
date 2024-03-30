@@ -75,7 +75,7 @@ Entry Point
 //
 //     @params: name of algorithm to be used (string), initial data slice ([][]byte)
 func GetRoot(algo string, data *[][]byte) {
-	ms := &Merkletree{}
+	ms := &MerkleServer{}
 	ms.DeriveRoot(algo, data)
 }
 
