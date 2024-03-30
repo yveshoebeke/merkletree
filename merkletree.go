@@ -74,6 +74,10 @@ Entry Point
 //   - Merkletree service configuration setup and start of request.
 //
 //     @params: name of algorithm to be used (string), initial data slice ([][]byte)
+func GetRoot(algo string, data *[][]byte) {
+	ms.DeriveRoot(algo, data)
+}
+
 func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, processFlags ...bool) ([]byte, error) {
 	// Check if we got something to work with.
 	if len(*hashes) == 0 {
