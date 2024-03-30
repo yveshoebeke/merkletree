@@ -14,7 +14,7 @@ var AlgorithmRegistry map[string]CryptoFunc
 type CryptoFunc func([]byte) []byte
 
 func NOP(hash []byte) []byte {
-	return hash
+	return hash[:]
 }
 
 func MD5(hash []byte) []byte {
