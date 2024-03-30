@@ -13,8 +13,12 @@ var AlgorithmRegistry map[string]CryptoFunc
 
 type CryptoFunc func([]byte) []byte
 
+func YEH(hash []byte) []byte {
+	return hash[:]
+}
+
 func NOP(hash []byte) []byte {
-	sumResult := md5.Sum(hash)
+	sumResult := hash
 	return sumResult[:]
 }
 
@@ -46,6 +50,7 @@ func SHA512SUM512(hash []byte) []byte {
 // Create function registry
 func init() {
 	AlgorithmRegistry = map[string]CryptoFunc{
+		"YEH":          YEH,
 		"NOP":          NOP,
 		"MD5":          MD5,
 		"SHA1":         SHA1,
