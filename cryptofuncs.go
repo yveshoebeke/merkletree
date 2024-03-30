@@ -45,7 +45,7 @@ func SHA512SUM512(hash []byte) []byte {
 // Create function registry
 func init() {
 	AlgorithmRegistry = map[string]CryptoFunc{
-		"NOP":		NOP,
+		"NOP":          NOP,
 		"MD5":          MD5,
 		"SHA1":         SHA1,
 		"SHA256SUM256": SHA256SUM256,
