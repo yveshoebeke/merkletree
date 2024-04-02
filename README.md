@@ -4,7 +4,7 @@
 
 This functionality will deliver the root hash of a hash slice.
 
-* Sequence 1
+* Sequence 1 (optionl)
 * Sequence 2
 * Sequence 3
 
