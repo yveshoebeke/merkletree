@@ -7,20 +7,13 @@ import (
 	"crypto/sha512"
 	"encoding/json"
 	"sort"
+
+	"golang.org/x/crypto/sha3"
 )
 
 var AlgorithmRegistry map[string]CryptoFunc
 
 type CryptoFunc func([]byte) []byte
-
-func YEH(hash []byte) []byte {
-	return hash[:]
-}
-
-func NOP(hash []byte) []byte {
-	sumResult := hash
-	return sumResult[:]
-}
 
 func MD5(hash []byte) []byte {
 	sumResult := md5.Sum(hash)
@@ -29,6 +22,11 @@ func MD5(hash []byte) []byte {
 
 func SHA1(hash []byte) []byte {
 	sumResult := sha1.Sum(hash)
+	return sumResult[:]
+}
+
+func SHA3SUM256(hash []byte) []byte {
+	sumResult := sha3.Sum256(hash)
 	return sumResult[:]
 }
 
@@ -50,10 +48,9 @@ func SHA512SUM512(hash []byte) []byte {
 // Create function registry
 func init() {
 	AlgorithmRegistry = map[string]CryptoFunc{
-		"YEH":          YEH,
-		"NOP":          NOP,
 		"MD5":          MD5,
 		"SHA1":         SHA1,
+		"SHA3SUM256":   SHA3SUM256,
 		"SHA256SUM256": SHA256SUM256,
 		"SHA512SUM256": SHA512SUM256,
 		"SHA512SUM512": SHA512SUM512,

@@ -57,6 +57,7 @@ type MerkleServer struct {
 	leaves           *[][]byte  `json:"-"`
 	HashTypeID       string     `json:"hashtype"`
 	hashGenerator    CryptoFunc `json:"-"`
+	ProcessType      int        `json:"processtype"`
 	InitWithEncoding bool       `json:"initWithEncoding"`
 	ProofRequest     bool       `json:"proofrequest"`
 	ProcessResult    []byte     `json:"root"`
@@ -76,7 +77,7 @@ Entry Point
 //     @params: name of algorithm to be used (string), initial data slice ([][]byte)
 func GetRoot(algo string, data *[][]byte) ([]byte, error) {
 	ms := &MerkleServer{}
-	root, err := ms.DeriveRoot(algo, data, false)
+	root, err := ms.DeriveRoot(algo, data, 0, false)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -84,7 +85,7 @@ func GetRoot(algo string, data *[][]byte) ([]byte, error) {
 	return root, nil
 }
 
-func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, processFlags ...bool) ([]byte, error) {
+func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, processType int, initEncodingFlags ...bool) ([]byte, error) {
 	// Check if we got something to work with.
 	if len(*hashes) == 0 {
 		return []byte{}, &EmptyHashErr{}
@@ -96,23 +97,36 @@ func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, 
 		return []byte{}, &UnknownAlgorithmErr{algorithmRequested}
 	}
 
+	// Set process type
+	if processType < 0 || processType > 1 {
+		return []byte{}, &InvalidProcessTypeErr{}
+	}
 	// Set process flag
-	// initWithEncoding := If(len(processFlags) > 0, processFlags[0], false)
-	initWithEncoding := false
+	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], false)
+	// initWithEncoding := false
 
 	// Initialize Merkel pertinents.
 	ms = &MerkleServer{
 		leaves:           hashes,
 		HashTypeID:       algorithmRequested,
 		hashGenerator:    AlgorithmRegistry[algorithmRequested],
+		ProcessType:      processType,
 		InitWithEncoding: initWithEncoding,
 	}
 
 	// Start process.
-	if err := ms.processRequest(); err != nil {
-		return []byte{}, err
+	switch processType {
+	case 0:
+		if err := ms.processRequest(); err != nil {
+			return []byte{}, err
+		}
+	case 1:
+		if err := ms.processBinaryRequest(); err != nil {
+			return []byte{}, err
+		}
+
 	}
 
-	// Return Merkle root from sliceProcessRequest
+	// Return Merkle root from processRequest's
 	return ms.ProcessResult, nil
 }

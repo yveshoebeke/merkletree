@@ -1,9 +1,5 @@
 package merkletree
 
-import (
-	"slices"
-)
-
 func (ms *MerkleServer) processRequest() error {
 	var (
 		leaves  [][]byte = *ms.leaves
@@ -42,12 +38,7 @@ func (ms *MerkleServer) processRequest() error {
 			leaves[index+1] = []byte{}
 		}
 
-		// Remove elements with '0' byte content and collapse slice.
-		//	- ie:
-		//		[12] [0] [34] [0] => [12] [34]
-		leaves = slices.DeleteFunc(leaves, func(leaf []byte) bool {
-			return len(leaf) == 0
-		})
+		leaves = removeNillBytes(leaves)
 	}
 
 	ms.ProcessResult = leaves[0]
