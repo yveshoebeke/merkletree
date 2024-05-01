@@ -1,18 +1,11 @@
 package merkletree
 
-func (ms *MerkleServer) processRequest() error {
+func (ms *MerkleServer) processDuplicateAndAppendRequest() error {
 	var (
 		leaves  [][]byte = *ms.leaves
 		started bool     = false
 		index   int
 	)
-
-	// This could be removed.. TBD
-	if ms.InitWithEncoding {
-		for i := range leaves {
-			leaves[i] = ms.hashGenerator(leaves[i])
-		}
-	}
 
 	for {
 		// One remaining: Exit loop. Merkle tree root made.

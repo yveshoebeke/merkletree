@@ -4,7 +4,7 @@ import (
 	"math"
 )
 
-func (ms *MerkleServer) processBinaryRequest() error {
+func (ms *MerkleServer) processBinaryTreeRequest() error {
 	var (
 		leaves [][]byte = *ms.leaves
 		index  int
@@ -18,6 +18,7 @@ func (ms *MerkleServer) processBinaryRequest() error {
 	}
 
 	index = int(math.Pow(2, math.Ceil(math.Log2(float64(len(leaves))))))
+
 	for ; index < len(leaves); index += 2 {
 		leaves[index] = ms.hashGenerator(append(leaves[index][:], leaves[index+1][:]...))
 		leaves[index+1] = []byte{}
