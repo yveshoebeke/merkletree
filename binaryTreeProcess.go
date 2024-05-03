@@ -5,37 +5,27 @@ import (
 )
 
 func (ms *MerkleServer) processBinaryTreeRequest() error {
-	var (
-		leaves [][]byte = *ms.leaves
-		index  int
-	)
-
-	// This could be removed.. TBD
-	if ms.InitWithEncoding {
-		for i := range leaves {
-			leaves[i] = ms.hashGenerator(leaves[i])
-		}
+	// Get starting index: if 2^x > length -> idx = 2^x - length (See documentation for more details)
+	index := int(math.Pow(2, math.Ceil(math.Log2(float64(len(ms.Leaves)))))) - len(ms.Leaves)
+	for ; index < len(ms.Leaves); index += 2 {
+		ms.Leaves[index] = ms.hashGenerator(append(ms.Leaves[index][:], ms.Leaves[index+1][:]...))
+		ms.Leaves[index+1] = []byte{}
 	}
 
-	index = int(math.Pow(2, math.Ceil(math.Log2(float64(len(leaves))))))
+	// Removenill bytes
+	ms.removeNillBytes()
 
-	for ; index < len(leaves); index += 2 {
-		leaves[index] = ms.hashGenerator(append(leaves[index][:], leaves[index+1][:]...))
-		leaves[index+1] = []byte{}
-	}
-
-	leaves = removeNillBytes(leaves)
-
-	for len(leaves) > 1 {
-		for index = 0; index < len(leaves); index += 2 {
-			leaves[index] = ms.hashGenerator(append(leaves[index][:], leaves[index+1][:]...))
-			leaves[index+1] = []byte{}
+	// Continue - each branch is now adhering to binary tree model.
+	for len(ms.Leaves) > 1 {
+		for index = 0; index < len(ms.Leaves); index += 2 {
+			ms.Leaves[index] = ms.hashGenerator(append(ms.Leaves[index][:], ms.Leaves[index+1][:]...))
+			ms.Leaves[index+1] = []byte{}
 		}
 
-		leaves = removeNillBytes(leaves)
+		ms.removeNillBytes()
 	}
 
-	ms.ProcessResult = leaves[0]
+	ms.ProcessResult = ms.Leaves[0]
 
 	return nil
 }

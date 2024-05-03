@@ -5,8 +5,6 @@ import (
 	"crypto/sha1"
 	"crypto/sha256"
 	"crypto/sha512"
-	"encoding/json"
-	"sort"
 
 	"golang.org/x/crypto/sha3"
 )
@@ -55,24 +53,4 @@ func init() {
 		"SHA512SUM256": SHA512SUM256,
 		"SHA512SUM512": SHA512SUM512,
 	}
-}
-
-// Returns json string with all available hash functions.
-func AvailableAlgorithms() (string, error) {
-	type availableJson struct {
-		Algorithms []string `json:"algorithms"`
-	}
-	jsonResult := &availableJson{}
-
-	for algorithmName := range AlgorithmRegistry {
-		jsonResult.Algorithms = append(jsonResult.Algorithms, algorithmName)
-	}
-
-	sort.Strings(jsonResult.Algorithms)
-	jsonEncodedAlgorithms, err := json.Marshal(jsonResult)
-	if err != nil {
-		return "", err
-	}
-
-	return string(jsonEncodedAlgorithms), nil
 }

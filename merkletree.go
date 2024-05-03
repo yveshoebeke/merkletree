@@ -6,7 +6,7 @@ package merkletree
 //	 yves.hoebeke@bytesupply.com
 //	 https://bytesupply.com/staff
 //
-// - Date: January 2024 (Haines City, FL USA)
+// - Date: January 2024
 //
 // - Test, Benchmark: `go test -v; go test -branch=.`
 //		- you can employ custom -detail flag in test, ex: `go test -detail`
@@ -15,69 +15,47 @@ package merkletree
 //
 //	- DeriveRoot:
 //	  --> This is the entry point to use this service.
-//	  Merkle service configuration setup:
-//		- Check if initial data (leaves) is available and of correct type.
-//		- Check if requested algorithm (hash) exists and set related function.
-//		- Check initial encoding flag
-//		- Get initial array of hashes ("leaves")
 //
-//  - ProcessRequest:
-//    Derive the root of a Merkle tree starting with data (i.e. transactions hashes in a block) as leaves.
-//    Note: To enhance speed input data is transformed to a linked list.
-////
-//	- CurrentAlgorithmUsed:
-//	  Returns the hash algorithm used.
+//	- GetMerkletreeRoot:
+//	  	Merkletree service configuration setup:
+//			- Check if initial data (leaves) is available and of correct type.
+//			- Validate requested algorithm (hash) exists and set related function.
+//			- Check initial encoding flag.
+//			- Validate process type requested.
+//			- Init Merkletree Structure.
+//			- Hash all elements of first branch, if requested.
+//			- Execute requested tree manipulation request.
 //
-//	- AvailableAlgorithms (cryptofuncs.go):
-//	  Returns the hash algoritms available in this module.
-//
-//  - Process schematic:
-//	  Note: Adjusting for odd number of leaves/branches by appending duplicate of last one.
-//
-// stop ------------> [12345555]          -> Merkle tree root (value out).
-//                    /        \
-//                [1234]       [5555]
-//                /    \       /   \
-//             [12]   [34]   [55] [55]    -> Branches.
-//             [12]   [34]   [55]  ^
-//             /  \   /  \   /  \
-//            [1][2] [3][4] [5][5]
-// start ---> [1][2] [3][4] [5] ^         -> Leaves (array data input).
-//
-// ^ = Duplicate hash to make leaf count even.
-// A single leaf input will be processed as an odd number of leaves, ie: appended to itself.
-//
-
 import (
 	"strings"
 )
 
 // Merkle tree object
 type MerkleServer struct {
-	leaves           *[][]byte  `json:"-"`
+	Leaves           [][]byte   `json:"-"`
 	HashTypeID       string     `json:"hashtype"`
 	hashGenerator    CryptoFunc `json:"-"`
 	ProcessType      int        `json:"processtype"`
 	InitWithEncoding bool       `json:"initWithEncoding"`
 	ProofRequest     bool       `json:"proofrequest"`
 	ProcessResult    []byte     `json:"root"`
-	ProofResult      []byte     `json:"proof"`
+	ProofResult      []byte     `json:"proofresult"`
 }
 
 /*
 Entry Point
 
-     ^ ^
-    (O o)
+	 ^ ^
+	(O o)
+
 -o00( . )00o-
 -------------
+
+  - Merkletree service configuration setup and start of request.
 */
-//   - Merkletree service configuration setup and start of request.
-//
-//     @params: name of algorithm to be used (string), initial data slice ([][]byte)
-func GetRoot(algo string, data *[][]byte) ([]byte, error) {
+func DeriveRoot(algo string, data [][]byte, processType int, initEncode bool) ([]byte, error) {
 	ms := &MerkleServer{}
-	root, err := ms.DeriveRoot(algo, data, 0, false)
+	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
 	if err != nil {
 		return []byte{}, err
 	}
@@ -85,9 +63,9 @@ func GetRoot(algo string, data *[][]byte) ([]byte, error) {
 	return root, nil
 }
 
-func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, processType int, initEncodingFlags ...bool) ([]byte, error) {
+func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags bool) ([]byte, error) {
 	// Check if we got something to work with.
-	if len(*hashes) == 0 {
+	if len(hashes) == 0 {
 		return []byte{}, &EmptyHashErr{}
 	}
 
@@ -97,31 +75,38 @@ func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, 
 		return []byte{}, &UnknownAlgorithmErr{algorithmRequested}
 	}
 
-	// Set process type
-	if processType < 0 || processType > 1 {
+	// Set/check process type request.
+	if processType < 0 || processType > 2 {
 		return []byte{}, &InvalidProcessTypeErr{}
 	}
-	// Set process flag
-	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], false)
-	// initWithEncoding := false
+
+	// Set process flag.
+	// initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], false)
+	initWithEncoding := initEncodingFlags
 
 	// Initialize Merkel pertinents.
 	ms = &MerkleServer{
-		leaves:           hashes,
+		Leaves:           hashes,
 		HashTypeID:       algorithmRequested,
 		hashGenerator:    AlgorithmRegistry[algorithmRequested],
 		ProcessType:      processType,
 		InitWithEncoding: initWithEncoding,
 	}
 
+	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
-		ms.initialEncodingProcess()
+		for i := range ms.Leaves {
+			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
+		}
 	}
-
-	// Start process.
+	// Start requested process. Unbalanced trees will be handled according
+	//	to the specific desired process logic.
+	//	- 0: duplicate and append last hash element to current branch.
+	//	- 1: pass last hash element of odd length branch to next.
+	//	- 2: convert to binary tree.
 	switch processType {
 	case 0:
-		if err := ms.processBinaryTreeRequest(); err != nil {
+		if err := ms.processDuplicateAndAppendRequest(); err != nil {
 			return []byte{}, err
 		}
 	case 1:
@@ -129,12 +114,12 @@ func (ms *MerkleServer) DeriveRoot(algorithmRequested string, hashes *[][]byte, 
 			return []byte{}, err
 		}
 	case 2:
-		if err := ms.processDuplicateAndAppendRequest(); err != nil {
+		if err := ms.processBinaryTreeRequest(); err != nil {
 			return []byte{}, err
 		}
 
 	}
 
-	// Return Merkle root from processRequest's
+	// Return Merkle root from process
 	return ms.ProcessResult, nil
 }
