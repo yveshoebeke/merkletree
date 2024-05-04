@@ -11,8 +11,8 @@ This functionality will deliver the root hash of a data collection.
 Options available:
 
 * Choose encoding algorithm
-* Initial branch encoding option
 * Specify tree creation and Unbalanced tree process
+* Initial branch encoding option
 
 ---
 
@@ -23,7 +23,7 @@ import github.com/yveshoebeke/Merkletree
 ```
 
 ```go
-myroot := merkletree.Deriveroot(algorithm, data, processType, initialEncoding)
+myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 ```
 
 ### General Process Flow
@@ -110,8 +110,10 @@ We could write a loop that will increment the exponent by one untill the result 
 So I have employed the following:
 
 L = number of elements in the slice.
+
 X = log2(L); X is converted to an integer after rounding it up.
-I = 2^X - L; this is our starting index.
+
+I = 2^X^ - L; this is our starting index.
 
 All this can be done in one line, as:
 
