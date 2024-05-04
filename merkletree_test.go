@@ -53,6 +53,9 @@ func init() {
 }
 
 func TestDeriveRoot(t *testing.T) {
+	if *showTestResults != true {
+		fmt.Println("    [Note: use `-detail` flag to see more]")
+	}
 	DeriveRootTests = append(DeriveRootTests,
 		DeriveRootTest{
 			arg1:     "SHA256SUM256",
@@ -104,19 +107,19 @@ func TestDeriveRoot(t *testing.T) {
 
 }
 
-func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppendInited(b *testing.B) {
+func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppend(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements, 0, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, DupeAppend, true)
 	}
 }
 
-func BenchmarkDeriveRoot10000LeavesSHA256SUM256PassThroughInited(b *testing.B) {
+func BenchmarkDeriveRoot10000LeavesSHA256SUM256PassThrough(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements, 1, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, PassThrough, true)
 	}
 }
-func BenchmarkDeriveRoot10000LeavesSHA256SUM256BinaryTreeInited(b *testing.B) {
+func BenchmarkDeriveRoot10000LeavesSHA256SUM256BinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements, 2, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, BinaryTree, true)
 	}
 }

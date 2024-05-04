@@ -1,5 +1,4 @@
 # ignore specific files
-.ignore
 
 # ignore *.txt *.nop
 *.txt
