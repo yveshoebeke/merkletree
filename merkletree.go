@@ -32,7 +32,7 @@ import (
 
 // Merkle tree object
 type MerkleServer struct {
-	Leaves           *[][]byte  `json:"-"`
+	Leaves           [][]byte   `json:"-"`
 	HashTypeID       string     `json:"hashtype"`
 	hashGenerator    CryptoFunc `json:"-"`
 	ProcessType      int        `json:"processtype"`
@@ -53,7 +53,7 @@ Entry Point
 
   - Merkletree service configuration setup and start of request.
 */
-func DeriveRoot(algo string, data *[][]byte, processType int, initEncode ...bool) ([]byte, error) {
+func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
 	ms := &MerkleServer{}
 	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
 	if err != nil {
@@ -63,9 +63,9 @@ func DeriveRoot(algo string, data *[][]byte, processType int, initEncode ...bool
 	return root, nil
 }
 
-func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes *[][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
+func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
 	// Check if we got something to work with.
-	if len(*hashes) == 0 {
+	if len(hashes) == 0 {
 		return []byte{}, &EmptyHashErr{}
 	}
 
@@ -95,11 +95,11 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes *[][
 
 	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
-		leaves := *ms.Leaves
-		for i := range leaves {
-			leaves[i] = ms.hashGenerator(leaves[i])
+		// leaves := *ms.Leaves
+		for i := range ms.Leaves {
+			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
 		}
-		ms.Leaves = &leaves
+		// ms.Leaves = &leaves
 	}
 	// Start requested process. Unbalanced trees will be handled according
 	//	to the specific desired process logic.

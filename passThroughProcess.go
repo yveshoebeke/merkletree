@@ -1,36 +1,25 @@
 package merkletree
 
 func (ms *MerkleServer) processPassThroughRequest() error {
-	var (
-		leaves [][]byte
-	)
-
-	leaves = *ms.Leaves
-
-	for len(leaves) > 1 {
-		for index := 0; index < len(leaves); index += 2 {
-			// if index to adjacent would overflow stop and leave last element alone,
-			//	ie.: pass it through to next iteration.
-			if index+1 >= len(leaves) {
+	for len(ms.Leaves) > 1 {
+		for index := 0; index < len(ms.Leaves); index += 2 {
+			// - if index to adjacent would overflow stop and leave last element alone,
+			//	wow: pass it through to next branch iteration.
+			if index+1 >= len(ms.Leaves) {
 				break
 			}
-			leaves[index] = ms.hashGenerator(append(leaves[index][:], leaves[index+1][:]...))
-			leaves[index+1] = []byte{}
+
+			// - combine (concatenate) hash of left and right (in couple)
+			// - encode it with requested algorithm
+			// - Zero (nil) out the right element's value
+			ms.Leaves[index] = ms.hashGenerator(append(ms.Leaves[index][:], ms.Leaves[index+1][:]...))
+			ms.Leaves[index+1] = []byte{}
 		}
 
-		leaves = removeNillBytes(leaves)
+		ms.Leaves = removeNillBytes(ms.Leaves)
 	}
 
-	ms.ProcessResult = leaves[0]
+	ms.ProcessResult = ms.Leaves[0]
 
 	return nil
 }
-
-// func (ms *MerkleServer) printHashes(msg string) {
-// 	fmt.Printf("%s\n", msg)
-// 	// fmt.Println(ms.Leaves)
-// 	for _, l := range ms.Leaves {
-// 		println(hex.EncodeToString(l))
-// 	}
-// 	fmt.Println("---")
-// }

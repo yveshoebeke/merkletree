@@ -13,6 +13,9 @@ import (
 const (
 	ColorGreen   = "\u001b[32m"
 	ColorDefault = "\u001b[00m"
+	DupeAppend   = 0
+	PassThrough  = 1
+	BinaryTree   = 2
 )
 
 // table driven tests
@@ -35,19 +38,14 @@ var (
 )
 
 func makeTestHashes() {
-	resultSHA256SUM256_0, _ = hex.DecodeString("e067e8bf61a7c48115f1bb351dc27d6a003a28581357a725d813c5569531d129")
-	resultSHA256SUM256_1, _ = hex.DecodeString("db84b5e863ff8dda1946029537123f058db87615a5317cd4375bc0fee751a6b1")
-	resultSHA256SUM256_2, _ = hex.DecodeString("dbff0bb54efc926fc56ec7de468b173a95e6f9bc81d05292906c214ef0f0ff3a")
-
-	for _, word := range strings.Split("I want proof right now", " ") {
-		iWantProofRightNow = append(iWantProofRightNow, SHA256SUM256([]byte(word)))
-	}
+	resultSHA256SUM256_0, _ = hex.DecodeString("7c6aed8b3a1f18ad143ef5911302666c758a41d1588141e46a08e44561bcd582")
+	resultSHA256SUM256_1, _ = hex.DecodeString("e0934a80a459a7c2256d7eef4a819d4be23b12ed59147acb981fe2e65ecc97db")
+	resultSHA256SUM256_2, _ = hex.DecodeString("84d54d7074b373c94fd43e8fb1d78b7fd1925aadff0f2bf90ef1c66d5462f24f")
 
 	fillerValue := md5.Sum([]byte("merkletree"))
 	for i := 0; i < 10000; i++ {
 		tenThousandElements = append(tenThousandElements, fillerValue[:])
 	}
-
 }
 
 func init() {
@@ -59,31 +57,36 @@ func TestDeriveRoot(t *testing.T) {
 		DeriveRootTest{
 			arg1:     "SHA256SUM256",
 			arg2:     iWantProofRightNow,
-			arg3:     0,
-			arg4:     true,
+			arg3:     DupeAppend,
+			arg4:     false,
 			expected: resultSHA256SUM256_0,
 			err:      nil,
 		},
 		DeriveRootTest{
 			arg1:     "SHA256SUM256",
 			arg2:     iWantProofRightNow,
-			arg3:     1,
-			arg4:     true,
+			arg3:     PassThrough,
+			arg4:     false,
 			expected: resultSHA256SUM256_1,
 			err:      nil,
 		},
 		DeriveRootTest{
 			arg1:     "SHA256SUM256",
 			arg2:     iWantProofRightNow,
-			arg3:     2,
-			arg4:     true,
+			arg3:     BinaryTree,
+			arg4:     false,
 			expected: resultSHA256SUM256_2,
 			err:      nil,
 		},
 	)
 
 	for _, test := range DeriveRootTests {
-		output, err := DeriveRoot(test.arg1, &test.arg2, test.arg3, test.arg4)
+		iWantProofRightNow = [][]byte{}
+		for _, word := range strings.Split("I want proof right now", " ") {
+			iWantProofRightNow = append(iWantProofRightNow, SHA256SUM256([]byte(word)))
+		}
+		test.arg2 = iWantProofRightNow
+		output, err := DeriveRoot(test.arg1, test.arg2, test.arg3, test.arg4)
 
 		// provided by the `-detail` flag (see above)
 		if *showTestResults {
@@ -103,17 +106,17 @@ func TestDeriveRoot(t *testing.T) {
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppendInited(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", &tenThousandElements, 0, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, 0, true)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256PassThroughInited(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", &tenThousandElements, 1, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, 1, true)
 	}
 }
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256BinaryTreeInited(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", &tenThousandElements, 2, true)
+		DeriveRoot("SHA256SUM256", tenThousandElements, 2, true)
 	}
 }

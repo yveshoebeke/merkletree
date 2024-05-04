@@ -1,6 +1,9 @@
-# ignore all .txt files
-*.txt
+# ignore specific files
+.ignore
 
-# ignore all .nop (not operational) files
+# ignore *.txt *.nop
+*.txt
 *.nop
 
+# ignore directories
+temp/
