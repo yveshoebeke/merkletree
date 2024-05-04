@@ -9,7 +9,7 @@ package merkletree
 // - Date: January 2024
 //
 // - Test, Benchmark: `go test -v; go test -branch=.`
-//		- you can employ custom -detail flag in test, ex: `go test -detail`
+//		- you can specify custom -detail flag in test, ex: `go test -detail`
 //
 // functions etc:
 //
@@ -45,13 +45,7 @@ type MerkleServer struct {
 /*
 Entry Point
 
-	 ^ ^
-	(O o)
-
--o00( . )00o-
--------------
-
-  - Merkletree service configuration setup and start of request.
+- Merkletree service configuration setup and start of request.
 */
 func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
 	ms := &MerkleServer{}
@@ -66,7 +60,7 @@ func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool)
 func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
 	// Check if we got something to work with.
 	if len(hashes) == 0 {
-		return []byte{}, &EmptyHashErr{}
+		return []byte{}, &EmptyListErr{}
 	}
 
 	// Check if requested algorithm is available.
@@ -95,11 +89,9 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 
 	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
-		// leaves := *ms.Leaves
 		for i := range ms.Leaves {
 			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
 		}
-		// ms.Leaves = &leaves
 	}
 	// Start requested process. Unbalanced trees will be handled according
 	//	to the specific desired process logic.
