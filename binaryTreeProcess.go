@@ -16,7 +16,7 @@ func (ms *MerkleServer) processBinaryTreeRequest() error {
 	}
 
 	// Removenill bytes
-	ms.Leaves = removeNillBytes(ms.Leaves)
+	ms.removeNillBytes()
 
 	for len(ms.Leaves) > 1 {
 		for index = 0; index < len(ms.Leaves); index += 2 {
@@ -28,7 +28,7 @@ func (ms *MerkleServer) processBinaryTreeRequest() error {
 		}
 
 		// Removenill bytes
-		ms.Leaves = removeNillBytes(ms.Leaves)
+		ms.removeNillBytes()
 	}
 
 	ms.ProcessResult = ms.Leaves[0]

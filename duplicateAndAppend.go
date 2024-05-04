@@ -28,7 +28,7 @@ func (ms *MerkleServer) processDuplicateAndAppendRequest() error {
 		}
 
 		// Remove 'nill' bytes.
-		ms.Leaves = removeNillBytes(ms.Leaves)
+		ms.removeNillBytes()
 	}
 
 	ms.ProcessResult = ms.Leaves[0]

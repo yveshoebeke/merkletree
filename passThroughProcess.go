@@ -16,7 +16,7 @@ func (ms *MerkleServer) processPassThroughRequest() error {
 			ms.Leaves[index+1] = []byte{}
 		}
 
-		ms.Leaves = removeNillBytes(ms.Leaves)
+		ms.removeNillBytes()
 	}
 
 	ms.ProcessResult = ms.Leaves[0]

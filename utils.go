@@ -34,8 +34,8 @@ func (ms *MerkleServer) CurrentAlgorithmUsed() string {
 // Remove elements with nill byte content and collapse slice.
 //   - ie:
 //     [12] [0] [34] [0] => [12] [34]
-func removeNillBytes(leaves [][]byte) [][]byte {
-	return slices.DeleteFunc(leaves, func(leaf []byte) bool {
+func (ms *MerkleServer) removeNillBytes() {
+	ms.Leaves = slices.DeleteFunc(ms.Leaves, func(leaf []byte) bool {
 		return len(leaf) == 0
 	})
 }
