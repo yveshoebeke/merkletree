@@ -16,6 +16,14 @@ Options available:
 
 ---
 
+### Signature
+
+```go
+type Merkeltree func(string, [][]byte, int, ...bool) []byte
+```
+
+---
+
 ### Usage
 
 ```go
@@ -29,14 +37,6 @@ myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 ### General Process Flow Overview
 
 ![Process Overview](docs/ProcessOverview.png)
-
----
-
-### Signature
-
-```go
-type Merkeltree func(string, [][]byte, int, ...bool) []byte
-```
 
 ---
 
