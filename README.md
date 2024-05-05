@@ -82,14 +82,14 @@ They are, in order:
 Accepts a string that denotes the desired hashing algorithm.
 The following functionalities are in the registry:
 
-|==Ident==<sup>(1)</sup>  |  import     | syntax|
+|Ident<sup>(1)</sup>  |  import     | syntax|
 |-------------|---------------|----------------|
-|==MD5==          | ```crypto/md5```| ```md5.Sum(data)```|
-|==SHA1==          | ```crypto/sha1``` | ```sha1.Sum(data)```|
-|==SHA3SUM256==    | ```golang.org/x/crypto/sha3``` |```sha3.Sum256(data)```|
-|==SHA256SUM256==  | ```crypto/sha256``` |```sha256.Sum256(data)```|
-|==SHA512SUM256==  | ```crypto/sha512``` |```sha512.Sum256(data)```|
-|==SHA512SUM512==  | ```crypto/sha512``` |```sha512.Sum512(data)```|
+|MD5          | ```crypto/md5```| ```md5.Sum(data)```|
+|SHA1          | ```crypto/sha1``` | ```sha1.Sum(data)```|
+|SHA3SUM256    | ```golang.org/x/crypto/sha3``` |```sha3.Sum256(data)```|
+|SHA256SUM256  | ```crypto/sha256``` |```sha256.Sum256(data)```|
+|SHA512SUM256  | ```crypto/sha512``` |```sha512.Sum256(data)```|
+|SHA512SUM512  | ```crypto/sha512``` |```sha512.Sum512(data)```|
 
 <sup>(1)</sup>Will raise an *unknown hash algorithm* error if no match is found.
 
