@@ -121,7 +121,7 @@ To accomplish this we will first find the lowest exponent needed to raise 2 by t
 
 This exponential result is subtracted by the number of elements to obtain the index where the first iteration will start.
 
-We could write a loop that will increment the exponent by one untill the result is greater then the aforementioned number, but by applying the binary logarithm on the length of the slice we can basically avoid this.
+We could write a loop that will increment the exponent by one untill the result is greater then the aforementioned number. However a better solution is to apply the binary logarithm (log base 2) on the length of the input slice.
 
 So I have employed the following:
 
@@ -139,6 +139,8 @@ All this can be accomplished as so:
 startIdx := int(math.Pow(2, math.Ceil(math.Log2(float64(len(ms.Leaves)))))) - len(ms.Leaves)
 ```
 
+![Process Overview](docs/BinaryTree.png)
+
 ---
 
 ### Result
@@ -150,3 +152,5 @@ The function returns a slice of bytes.
 ```
 
 ---
+
+### Proof
