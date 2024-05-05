@@ -105,9 +105,9 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 |Value<sup>(3)</sup>|Process Name|
 |-----------|-----------|
-|0| Pass Through|
-|1| Duplicate and Append|
-|2| Binary Tree|
+|0| [Pass Through](#pass-through)|
+|1| [Duplicate and Append](#duplicate-and-append)|
+|2| [Binary Tree](#binary-tree)|
 
 <sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
 
