@@ -24,7 +24,7 @@ type Merkeltree func(string, [][]byte, int, ...bool) []byte
 
 ---
 
-### Usage
+### Implementation
 
 ```go
 import github.com/yveshoebeke/Merkletree
