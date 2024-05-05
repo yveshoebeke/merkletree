@@ -32,6 +32,14 @@ myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 
 ---
 
+### Signature
+
+```go
+type Merkeltree func(string, [][]byte, int, ...bool) []byte
+```
+
+---
+
 ### Parameters
 
 There are 3 mandatory parameters and 1 optional.
@@ -71,8 +79,8 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 |<mark>Value</mark>|Process Name|
 |-----------|-----------|
-|<mark>0</mark>| Duplicate and Append|
-|<mark>1</mark>| Pass Through|
+|<mark>0</mark>| Pass Through|
+|<mark>1</mark>| Duplicate and Append|
 |<mark>2</mark>| Binary Tree|
 
 #### Initiate with encodeing
@@ -127,3 +135,15 @@ All this can be accomplished as so:
 ```go
 startIdx := int(math.Pow(2, math.Ceil(math.Log2(float64(len(ms.Leaves)))))) - len(ms.Leaves)
 ```
+
+---
+
+### Result
+
+The function returns a slice of bytes.
+
+```go
+[]byte
+```
+
+---
