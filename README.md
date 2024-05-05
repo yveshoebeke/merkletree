@@ -26,7 +26,7 @@ import github.com/yveshoebeke/Merkletree
 myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 ```
 
-### General Process Flow
+### General Process Flow Overview
 
 ![Process Overview](docs/ProcessOverview.png)
 
@@ -93,9 +93,14 @@ Note: You _must_ declare one. There is no default.
 
 When we encounter an odd number of elements, this process will simply create a duplicate of the last element and append it to the end of the slice, thus having in essence 2 equal data elements at the end, making the number of elements even.
 
+![Process Overview](docs/DupeAppend.png)
+
+
 #### Pass Through
 
 Here we will ignore the last element and just pass it through to the next branch.
+
+![Process Overview](docs/PassThrough.png)
 
 #### Binary Tree
 
@@ -109,13 +114,15 @@ We could write a loop that will increment the exponent by one untill the result 
 
 So I have employed the following:
 
+```text
 L = number of elements in the slice.
 
 X = log2(L); X is converted to an integer after rounding it up.
 
-I = 2^X^ - L; this is our starting index.
+I = 2^X - L; this is our starting index.
+```
 
-All this can be done in one line, as:
+All this can be accomplished as so:
 
 ```go
 startIdx := int(math.Pow(2, math.Ceil(math.Log2(float64(len(ms.Leaves)))))) - len(ms.Leaves)
