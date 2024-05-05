@@ -34,6 +34,8 @@ import github.com/yveshoebeke/Merkletree
 myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 ```
 
+---
+
 ### General Process Flow Overview
 
 ![Process Overview](docs/ProcessOverview.png)
