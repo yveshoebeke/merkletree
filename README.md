@@ -67,7 +67,7 @@ The following functionalities are in the registry:
 |<mark>SHA512SUM256</mark>  | ```crypto/sha512``` |```sha512.Sum256(data)```|
 |<mark>SHA512SUM512</mark>  | ```crypto/sha512``` |```sha512.Sum512(data)```|
 
-<sup>(1)</sup>Will raise an *unknown hash algorithm* error if no match is found.
+^(1)^</sup>Will raise an *unknown hash algorithm* error if no match is found.
 
 #### Data
 
@@ -97,20 +97,19 @@ Processing of a data collection into a tree can result in a so called Unbalanced
 
 The following will describe how this can be handled. If you are working with dta that is part of an established scheme, like a blockchain for example, you should select the one that is used in that particular scheme.
 
-Note: You _must_ declare one. There is no default.
-
-#### Duplicate and Append
-
-When we encounter an odd number of elements, this process will simply create a duplicate of the last element and append it to the end of the slice, thus having in essence 2 equal data elements at the end, making the number of elements even.
-
-![Process Overview](docs/DupeAppend.png)
-
+Note: You *must* declare one. There is no default.
 
 #### Pass Through
 
 Here we will ignore the last element and just pass it through to the next branch.
 
 ![Process Overview](docs/PassThrough.png)
+
+#### Duplicate and Append
+
+When we encounter an odd number of elements, this process will simply create a duplicate of the last element and append it to the end of the slice, thus having in essence 2 equal data elements at the end, making the number of elements even.
+
+![Process Overview](docs/DupeAppend.png)
 
 #### Binary Tree
 
