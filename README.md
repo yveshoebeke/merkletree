@@ -67,23 +67,25 @@ The following functionalities are in the registry:
 |<mark>SHA512SUM256</mark>  | ```crypto/sha512``` |```sha512.Sum256(data)```|
 |<mark>SHA512SUM512</mark>  | ```crypto/sha512``` |```sha512.Sum512(data)```|
 
-^(1)^</sup>Will raise an *unknown hash algorithm* error if no match is found.
+<sup>(1)</sup>Will raise an *unknown hash algorithm* error if no match is found.
 
 #### Data
 
-Expected data type: ```[][]byte```
+Expected data type: ```[][]byte```<sup>(2)</sup>
 
-If empty will raise the *empty list* error.
+<sup>(2)</sup>If empty will raise the *empty list* error.
 
 #### Process Type
 
 There are 3 process types that can be specified. Each one will handle unbalanced trees in it's own manner:
 
-|<mark>Value</mark>|Process Name|
+|Value<sup>(3)</sup>|Process Name|
 |-----------|-----------|
-|<mark>0</mark>| Pass Through|
-|<mark>1</mark>| Duplicate and Append|
-|<mark>2</mark>| Binary Tree|
+|0| Pass Through|
+|1| Duplicate and Append|
+|2| Binary Tree|
+
+<sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
 
 #### Initiate with encodeing
 
