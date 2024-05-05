@@ -125,6 +125,18 @@ The following will describe how this can be handled. When working with data that
 
 Note: You *must* declare one. There is no default.
 
+In the below process flow charts shown, all hashes are sha256.Sum256 and are hex string encoded for output. For brevity only the first and last 4 digits are shown.
+
+All input slices depicted are based on the hashes of the words in the sentence "I want proof right now"
+
+|Word| Hash |
+|--|--------------|
+|I|a83dd0ccbffe39d071cc317ddf6e97f5c6b1c87af91919271f9fa140b0508c6c|
+|want|8656aa55d393b032b7f05fd40daac127c4862315017072b231d726ccf0d686e6|
+|proof|c1cda26362828b69266512052b97cb3729e3b052e4ade47c0a1e3383defe73c7|
+|right|27042f4e6eca7d0b2a7ee4026df2ecfa51d3339e6d122aa099118ecd8563bad9|
+|now|ed5eb9a37e2d8231af3388319b941995f6dc8755c56043d0cc52b5fe405a87de|
+
 #### Pass Through
 
 The last element is passed through to the next branch.
@@ -165,9 +177,9 @@ Examples:
 
 |Slice length|Exponent|Index|
 |---------|-------|------|
-| 5 | log2(5) = 2.321 => 3 | 2^3 - 5 = 8 - 5 = 3 |
-| 1327 | log2(1327) = 10.374 => 11 | 2^11 - 1327 = 2048 - 1327 = 721 |
-| 10000 | log2(10000) = 13.288 => 14 | 2^14 - 10000 = 16384 - 10000 = 6384 |
+| 5 | log2(5) = 2.321 => 3 | 2<sup>3</sup> - 5 = 8 - 5 = 3 |
+| 1327 | log2(1327) = 10.374 = 11 | 2<sup>11</sup> - 1327 = 2048 - 1327 = 721 |
+| 10000 | log2(10000) = 13.288 => 14 | 2<sup>14</sup> - 10000 = 16384 - 10000 = 6384 |
 
 ![Process Overview](docs/BinaryTree.png)
 
