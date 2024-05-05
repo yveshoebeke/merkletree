@@ -36,6 +36,28 @@ myroot := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
 
 ---
 
+### Test and Benchmark
+
+Standard evocation:
+
+```shell
+go test
+```
+
+A custom flag is provided to see a more detailed test result:
+
+```shell
+go test -detail
+```
+
+```shell
+go test -bench=.
+```
+
+The benchmark will give you results running through 10,000 element input slice for all 3 process types, using sha256.Sum256 encoding.
+
+---
+
 ### General Process Flow Overview
 
 ![Process Overview](docs/ProcessOverview.png)
