@@ -78,7 +78,7 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], false)
 	// initWithEncoding := initEncodingFlags
 
-	// Initialize Merkel pertinents.
+	// Initialize merkle pertinents.
 	ms = &MerkleServer{
 		Leaves:           hashes,
 		HashTypeID:       algorithmRequested,
