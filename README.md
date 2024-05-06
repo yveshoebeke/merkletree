@@ -93,6 +93,12 @@ The following functionalities are in the registry:
 
 <sup>(1)</sup>Will raise an *unknown hash algorithm* error if no match is found.
 
+Note:
+
+* Other schemes can be added by editing the ```shell cryptofuncs.go``` source.
+* Registry signature: ```go var AlgorithmRegistry map[string]CryptoFunc```
+* Function signature: ```go type CryptoFunc func([]byte) []byte```
+
 #### Data
 
 Expected data type: ```[][]byte```<sup>(2)</sup>
