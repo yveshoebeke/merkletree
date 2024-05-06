@@ -113,9 +113,10 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 Notes:
 
-* Processing the same input data and subjecting it to different Process Types will obviously result in different Merkle Root values.
-* *Duplicate and Append* is used in the Bitcoin cryptocurrency/blockchain.
-* *Pass Through* is used in the Monero cryptocurrency/blockchain.
+1. Processing the same input data and subjecting it to different Process Types will obviously result in different Merkle Root values.
+1. Some real-word usage:
+    * *Duplicate and Append* is used in the Bitcoin cryptocurrency/blockchain.
+    * *Pass Through* is used in the Monero cryptocurrency/blockchain.
 
 #### Initiate with encodeing
 
