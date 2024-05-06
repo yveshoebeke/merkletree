@@ -95,9 +95,9 @@ The following functionalities are in the registry:
 
 Note:
 
-* Other schemes can be added by editing the ```shell cryptofuncs.go``` source.
-* Registry signature: ```go var AlgorithmRegistry map[string]CryptoFunc```
-* Function signature: ```go type CryptoFunc func([]byte) []byte```
+* Other schemes can be added by editing the ```cryptofuncs.go``` source.
+* Registry signature: ```var AlgorithmRegistry map[string]CryptoFunc```
+* Function signature: ```type CryptoFunc func([]byte) []byte```
 
 #### Data
 
