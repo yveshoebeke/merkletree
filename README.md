@@ -111,6 +111,12 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 <sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
 
+Notes:
+
+* Processing the same input data and subjecting it to different Process Types will obviously result in different Merkle Root values.
+* *Duplicate and Append* is used in the Bitcoin cryptocurrency/blockchain.
+* *Pass Through* is used in the Monero cryptocurrency/blockchain.
+
 #### Initiate with encodeing
 
 Boolean. If not provided, will default to ```false```. If set to ```true``` will direct the function to initialize all data in the data parameter to be encoded with the specified hashing algorithm. To be used in case your input contains unencoded data.
