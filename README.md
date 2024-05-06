@@ -196,3 +196,12 @@ The function returns a slice of bytes.
 ---
 
 ### Proof
+
+```shell
+go run proof/proof.go
+```
+
+Notes:
+
+* Needs cosmetic enhancements.
+* This README section needs to be completed further.
