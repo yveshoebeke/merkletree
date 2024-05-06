@@ -34,7 +34,7 @@ func printBranch(msg string, leaves [][]byte) {
 
 }
 
-func main() {
+func Proof() {
 	rawDataString := "I want proof right now"
 	rawDataStringSlice := strings.Split(rawDataString, " ")
 	fmt.Printf("len=%d cap=%d %v\n", len(rawData), cap(rawData), rawData)
@@ -182,4 +182,8 @@ func main() {
 	}
 
 	fmt.Printf("\nbinarytree root:\n%s\n", hex.EncodeToString(leaves[0]))
+}
+
+func main() {
+	Proof()
 }

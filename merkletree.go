@@ -100,11 +100,11 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 	//	- 2: convert to binary tree.
 	switch processType {
 	case 0:
-		if err := ms.processDuplicateAndAppendRequest(); err != nil {
+		if err := ms.processPassThroughRequest(); err != nil {
 			return []byte{}, err
 		}
 	case 1:
-		if err := ms.processPassThroughRequest(); err != nil {
+		if err := ms.processDuplicateAndAppendRequest(); err != nil {
 			return []byte{}, err
 		}
 	case 2:

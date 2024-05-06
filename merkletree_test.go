@@ -13,8 +13,8 @@ import (
 const (
 	ColorGreen   = "\u001b[32m"
 	ColorDefault = "\u001b[00m"
-	DupeAppend   = 0
-	PassThrough  = 1
+	PassThrough  = 0
+	DupeAppend   = 1
 	BinaryTree   = 2
 )
 
