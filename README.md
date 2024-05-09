@@ -4,7 +4,16 @@
 
 ### General
 
-A hash tree, also known as a Merkle tree, is a tree in which each leaf node is labeled with the cryptographic hash of a data block, and each non-leaf, or branch, node is labeled with the cryptographic hash of its child nodes' labels.
+A hash tree, also known as a Merkle tree<sup>(1)</sup>, is a tree in which each leaf node is labeled with the cryptographic hash of a data block, and each non-leaf, or branch, node is labeled with the cryptographic hash of its child nodes' labels.
+
+<sup>(1)</sup>References:
+
+* [Wikipedia](https://en.wikipedia.org/wiki/Merkle_tree)
+* [YouTube](https://www.youtube.com/watch?v=PraPZFMj6h8)
+* [GeeksForGeeks](https://www.geeksforgeeks.org/introduction-to-merkle-tree/)
+* [Brilliant](https://brilliant.org/wiki/merkle-tree/)
+* [Medium](https://medium.com/codex/power-of-merkle-trees-1e44819e9639)
+* ... 10^3's more ...
 
 Hash trees can be used to verify any kind of data stored, handled and transferred in and between computers. They can help ensure that data blocks received from others and even to check that the other peers do not lie or altered and send fake blocks.
 
