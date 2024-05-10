@@ -75,8 +75,7 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 	}
 
 	// Set process flag.
-	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], false)
-	// initWithEncoding := initEncodingFlags
+	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], []bool{false}[0])
 
 	// Initialize merkle pertinents.
 	ms = &MerkleServer{
@@ -93,11 +92,12 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
 		}
 	}
+
 	// Start requested process. Unbalanced trees will be handled according
 	//	to the specific desired process logic.
 	//	- 0: duplicate and append last hash element to current branch.
 	//	- 1: pass last hash element of odd length branch to next.
-	//	- 2: convert to binary tree.
+	//	- 2: process as a binary tree.
 	switch processType {
 	case 0:
 		if err := ms.processPassThroughRequest(); err != nil {
