@@ -9,7 +9,7 @@ A hash tree, also known as a Merkle tree<sup>(1)</sup>, is a tree in which each 
 <sup>(1)</sup>References:
 
 * [Wikipedia](https://en.wikipedia.org/wiki/Merkle_tree)
-* [YouTube](https://www.youtube.com/watch?v=PraPZFMj6h8)
+* [Simplilearn Youtube](https://www.youtube.com/watch?v=PraPZFMj6h8)
 * [GeeksForGeeks](https://www.geeksforgeeks.org/introduction-to-merkle-tree/)
 * [Brilliant](https://brilliant.org/wiki/merkle-tree/)
 * [Medium](https://medium.com/codex/power-of-merkle-trees-1e44819e9639)
