@@ -84,7 +84,7 @@ They are, in order:
 1. algorithm
 1. data
 1. process type
-1. initiate with encoding (optional)
+1. initiate with encoding ~(optional)~
 
 #### Algorithm parameter
 
@@ -135,7 +135,7 @@ Notes:
 
 #### Initiate with encodeing
 
-Boolean. If not provided, will default to ```false```. If set to ```true``` will direct the function to initialize all data in the data parameter to be encoded with the specified hashing algorithm. To be used in case your input contains unencoded data.
+Boolean. ~If not provided, will default to ```false```.~ If set to ```true``` will direct the function to initialize all data in the data parameter to be encoded with the specified hashing algorithm. To be used in case your input contains unencoded data.
 
 ---
 
