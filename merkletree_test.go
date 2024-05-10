@@ -117,29 +117,25 @@ func TestDeriveRoot(t *testing.T) {
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppend(b *testing.B) {
-	// for i := 0; i < b.N; i++ {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < b.N; i++ {
 		DeriveRoot("SHA256SUM256", tenThousandElements0, DupeAppend, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256PassThrough(b *testing.B) {
-	// for i := 0; i < b.N; i++ {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < b.N; i++ {
 		DeriveRoot("SHA256SUM256", tenThousandElements1, PassThrough, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256BinaryTree(b *testing.B) {
-	// for i := 0; i < b.N; i++ {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < b.N; i++ {
 		DeriveRoot("SHA256SUM256", tenThousandElements2, BinaryTree, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppendInited(b *testing.B) {
-	// for i := 0; i < b.N; i++ {
-	for i := 0; i < 1; i++ {
+	for i := 0; i < b.N; i++ {
 		DeriveRoot("SHA256SUM256", tenThousandElements3, DupeAppend, true)
 	}
 }
