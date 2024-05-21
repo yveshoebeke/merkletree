@@ -9,10 +9,7 @@ A hash tree, also known as a Merkle tree<sup>(1)</sup>, is a tree in which each 
 <sup>(1)</sup>References:
 
 * [Wikipedia](https://en.wikipedia.org/wiki/Merkle_tree)
-* [Simplilearn Youtube](https://www.youtube.com/watch?v=PraPZFMj6h8)
-* [GeeksForGeeks](https://www.geeksforgeeks.org/introduction-to-merkle-tree/)
 * [Brilliant](https://brilliant.org/wiki/merkle-tree/)
-* [Medium](https://medium.com/codex/power-of-merkle-trees-1e44819e9639)
 * [... 10^3's more ...](https://www.google.com/search?q=merkle+tree)
 
 Hash trees can be used to verify any kind of data stored, handled and transferred in and between computers. They can help ensure that data blocks received from others and even to check that the other peers do not lie or altered and send fake blocks.
