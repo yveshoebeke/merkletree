@@ -198,7 +198,10 @@ Examples:
 |---------|-------|------|
 | 5 | log2(5) = 2.321 => 3 | 2<sup>3</sup> - 5 = 8 - 5 = 3 |
 | 1327 | log2(1327) = 10.374 => 11 | 2<sup>11</sup> - 1327 = 2048 - 1327 = 721 |
+| 2048<sup>(*)</sup> | log2(2048) = 11 => 11 | 2<sup>11</sup> - 2048 = 2048 - 2048 = 0 |
 | 10000 | log2(10000) = 13.288 => 14 | 2<sup>14</sup> - 10000 = 16384 - 10000 = 6384 |
+
+<sup>(*)</sup> index will always be 0 if length is an exact integer exponent to square.
 
 ![Process Overview](docs/BinaryTree.png)
 
