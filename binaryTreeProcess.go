@@ -20,7 +20,6 @@ func (ms *MerkleServer) processBinaryTreeRequest() error {
 	ms.removeNillBytes(BinaryTree, startIndex)
 
 	for len(ms.Leaves) > 1 {
-		// fmt.Println("[", len(ms.Leaves), "]")
 		for index = 0; index < len(ms.Leaves); index += 2 {
 			// - combine (concatenate) hash of left and right (in couple)
 			// - encode it with requested algorithm
@@ -30,10 +29,7 @@ func (ms *MerkleServer) processBinaryTreeRequest() error {
 		}
 
 		// Removenill bytes
-		// fmt.Println("==>", len(ms.Leaves))
-
 		ms.removeNillBytes(NopProcess, 0)
-		// fmt.Println("===>", len(ms.Leaves))
 	}
 
 	ms.ProcessResult = ms.Leaves[0]
