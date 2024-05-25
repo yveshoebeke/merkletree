@@ -1,6 +1,5 @@
 package merkletree
 
-// - Package: merkletree
 //
 // - Author:
 //	 yves.hoebeke@bytesupply.com
@@ -11,7 +10,7 @@ package merkletree
 // - Test, Benchmark: `go test -v; go test -branch=.`
 //		- you can specify custom -detail flag in test, ex: `go test -detail`
 //
-// functions etc:
+// Functions:
 //
 //	- DeriveRoot:
 //	  --> This is the entry point to use this service.
@@ -26,7 +25,17 @@ package merkletree
 //			- Hash all elements of first branch, if requested.
 //			- Execute requested tree manipulation request.
 //
+// Helper/auxilary functions:
+//
+//	- CurrentAlgorithmUsed:
+//		Returns the hash algorithm used.
+//
+//	- removeNillBytes:
+//		Removes all empty []byte{} elements from hash slice.
+//
+
 import (
+	"slices"
 	"strings"
 )
 
@@ -116,4 +125,37 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 
 	// Return Merkle root from process
 	return ms.ProcessResult, nil
+}
+
+// Return the hash algorithm in use.
+func (ms *MerkleServer) CurrentAlgorithmUsed() string {
+	return ms.HashTypeID
+}
+
+// Remove elements with nill byte content and collapse slice.
+//   - ie:
+//     [12] [0] [34] [0] => [12] [34]
+func (ms *MerkleServer) removeNillBytes(processType int, startValue ...int) {
+	zeroStart := []int{0}
+	start := If(len(startValue) > 0, startValue[0], zeroStart[0])
+	switch processType {
+	case BinaryTree:
+		l := len(ms.Leaves)
+		found := true
+		for found {
+			found = false
+			for i := start; i < l; i++ {
+				if len(ms.Leaves[i]) == 0 {
+					ms.Leaves = append(ms.Leaves[:i], ms.Leaves[i+1:]...)
+					found = true
+					l--
+				}
+			}
+		}
+
+	default:
+		ms.Leaves = slices.DeleteFunc(ms.Leaves, func(leaf []byte) bool {
+			return len(leaf) == 0
+		})
+	}
 }

@@ -1,5 +1,12 @@
 package merkletree
 
+//
+// Functions:
+//
+//	- AvailableAlgorithms (cryptofuncs.go):
+//		Returns the hash algoritms available in this module.
+//
+
 import (
 	"crypto/md5"
 	"crypto/sha1"

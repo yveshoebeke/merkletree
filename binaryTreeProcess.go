@@ -1,7 +1,9 @@
 package merkletree
 
 import (
+	"encoding/json"
 	"math"
+	"sort"
 )
 
 func (ms *MerkleServer) processBinaryTreeRequest() error {
@@ -35,4 +37,24 @@ func (ms *MerkleServer) processBinaryTreeRequest() error {
 	ms.ProcessResult = ms.Leaves[0]
 
 	return nil
+}
+
+// Returns json string with all available hash functions.
+func AvailableAlgorithms() (string, error) {
+	type availableJson struct {
+		Algorithms []string `json:"algorithms"`
+	}
+	jsonResult := &availableJson{}
+
+	for algorithmName := range AlgorithmRegistry {
+		jsonResult.Algorithms = append(jsonResult.Algorithms, algorithmName)
+	}
+
+	sort.Strings(jsonResult.Algorithms)
+	jsonEncodedAlgorithms, err := json.Marshal(jsonResult)
+	if err != nil {
+		return "", err
+	}
+
+	return string(jsonEncodedAlgorithms), nil
 }
