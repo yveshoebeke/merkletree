@@ -1,4 +1,4 @@
-# Merkle Tree
+<h1><img src="docs/merkletree.png" style="height:25px;width:30px;float:left;margin:5px;"/>Merkle Tree</h1>
 
 ## Merkle Tree functionality in Go
 
