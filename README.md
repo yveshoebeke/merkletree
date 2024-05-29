@@ -1,4 +1,4 @@
-<h1><img src="docs/merkletree.png" style="height:25px;width:30px;float:left;margin-right:15px;border:1px solid black;"/>Merkle Tree</h1>
+<h1><img src="docs/merkletree.png" style="height:30px;width:30px;float:left;"/>&nbsp;&nbsp;Merkle Tree</h1>
 
 ## Merkle Tree functionality in Go
 
@@ -68,7 +68,9 @@ go test -bench=.
 
 ### Parameters
 
-There are 3 mandatory parameters and 1 optional.
+~There are 3 mandatory parameters and 1 optional.~
+
+There are 4 mandatory parameters.
 
 They are, in order:
 
@@ -77,7 +79,7 @@ They are, in order:
 1. process type
 1. initiate with encoding ~(optional)~
 
-#### Algorithm parameter
+#### Algorithm parameter ```string```
 
 Accepts a string that denotes the desired hashing algorithm.
 The following functionalities are in the registry:
@@ -99,32 +101,34 @@ Note:
 * Registry signature: ```var AlgorithmRegistry map[string]CryptoFunc```
 * Function signature: ```type CryptoFunc func([]byte) []byte```
 
-#### Data
+#### Data ```[][]byte```
 
 Expected data type: ```[][]byte```<sup>(2)</sup>
 
 <sup>(2)</sup>If empty will raise the *empty list* error.
 
-#### Process Type
+#### Process Type ```int```
 
 There are 3 process types that can be specified. Each one will handle unbalanced trees in it's own manner:
 
-|Value<sup>(3)</sup>|Process Name|
+|Value<sup>(3)</sup>|Process Name<sup>(4)</sup>|
 |-----------|-----------|
-|0| [Pass Through](#pass-through)|
-|1| [Duplicate and Append](#duplicate-and-append)|
-|2| [Binary Tree](#binary-tree)|
+|0| Pass Through]
+|1| Duplicate and Append|
+|2| Binary Tree|
 
 <sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
+
+<sup>(4)</sup>See [Wiki](https://github.com/yveshoebeke/merkletree/wiki) for detailed process description.
 
 Notes:
 
 1. Processing the same input data and subjecting it to different Process Types will obviously result in different Merkle Root values.
-1. Some real world usages:
+1. To the best of my knowledge at time of writing this some real world process type usage:
     * *Duplicate and Append* is used in the Bitcoin cryptocurrency/blockchain.
     * *Pass Through* is used in the Monero cryptocurrency/blockchain.
 
-#### Initiate with encodeing
+#### Initiate with encodeing ```bool```
 
 Boolean. ~If not provided, will default to ```false```.~ If set to ```true``` will direct the function to initialize all data in the data parameter to be encoded with the specified hashing algorithm. To be used in case your input contains unencoded data.
 
