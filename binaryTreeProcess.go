@@ -1,12 +1,19 @@
 package merkletree
 
 import (
+	"context"
 	"encoding/json"
 	"math"
 	"sort"
 )
 
-func (ms *MerkleServer) processBinaryTreeRequest() error {
+func (ms *MerkleServer) processBinaryTreeRequest(ctx context.Context) error {
+	const ThisProcess = 2
+	contextProcessType := ctx.Value(contextKeyRequestID)
+	if contextProcessType != processTypes[ThisProcess] {
+		return &InvalidContextProcessTypeErr{contextProcessType.(string)}
+	}
+
 	var index, startIndex int
 	// Get starting index: if 2^x > length then idx = 2^x - length (See documentation for more details)
 	startIndex = int(math.Pow(2, math.Ceil(math.Log2(float64(len(ms.Leaves)))))) - len(ms.Leaves)

@@ -16,9 +16,9 @@ import (
 	"golang.org/x/crypto/sha3"
 )
 
-var AlgorithmRegistry map[string]CryptoFunc
-
 type CryptoFunc func([]byte) []byte
+
+var AlgorithmRegistry map[string]CryptoFunc
 
 func MD5(hash []byte) []byte {
 	sumResult := md5.Sum(hash)
