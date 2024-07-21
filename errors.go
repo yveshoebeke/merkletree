@@ -28,3 +28,12 @@ type InvalidProcessTypeErr struct{}
 func (empty *InvalidProcessTypeErr) Error() string {
 	return "invalid process type argument"
 }
+
+// - process type value does not match context
+type InvalidContextProcessTypeErr struct {
+	contextProcess string
+}
+
+func (nomatchctx *InvalidContextProcessTypeErr) Error() string {
+	return fmt.Sprintf("process type does not match context: %s", nomatchctx.contextProcess)
+}

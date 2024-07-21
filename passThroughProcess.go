@@ -1,6 +1,16 @@
 package merkletree
 
-func (ms *MerkleServer) processPassThroughRequest() error {
+import (
+	"context"
+)
+
+func (ms *MerkleServer) processPassThroughRequest(ctx context.Context) error {
+	const ThisProcess = 0
+	contextProcessType := ctx.Value(contextKeyRequestID)
+	if contextProcessType != processTypes[ThisProcess] {
+		return &InvalidContextProcessTypeErr{contextProcessType.(string)}
+	}
+
 	for len(ms.Leaves) > 1 {
 		for index := 0; index < len(ms.Leaves); index += 2 {
 			// - if index to adjacent would overflow stop and leave last element alone,

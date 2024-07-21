@@ -35,9 +35,23 @@ package merkletree
 //
 
 import (
+	"context"
+	"fmt"
 	"slices"
 	"strings"
+	"time"
 )
+
+type contextKey int
+
+const (
+	contextKeyRequestID contextKey = iota
+)
+
+// GO routine response
+type Response struct {
+	err error
+}
 
 // Merkle tree object
 type MerkleServer struct {
@@ -67,6 +81,8 @@ func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool)
 }
 
 func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
+	type processTypeFunction func(context.Context) error
+
 	// Check if we got something to work with.
 	if len(hashes) == 0 {
 		return []byte{}, &EmptyListErr{}
@@ -95,6 +111,13 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 		InitWithEncoding: initWithEncoding,
 	}
 
+	// Process type registry
+	ProcessTypeRegistry := map[int]processTypeFunction{
+		0: ms.processPassThroughRequest,
+		1: ms.processDuplicateAndAppendRequest,
+		2: ms.processBinaryTreeRequest,
+	}
+
 	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
 		for i := range ms.Leaves {
@@ -102,28 +125,30 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 		}
 	}
 
-	// Start requested process. Unbalanced trees will be handled according
-	//	to the specific desired process logic.
-	//	- 0: duplicate and append last hash element to current branch.
-	//	- 1: pass last hash element of odd length branch to next.
-	//	- 2: process as a binary tree.
-	switch processType {
-	case 0:
-		if err := ms.processPassThroughRequest(); err != nil {
-			return []byte{}, err
-		}
-	case 1:
-		if err := ms.processDuplicateAndAppendRequest(); err != nil {
-			return []byte{}, err
-		}
-	case 2:
-		if err := ms.processBinaryTreeRequest(); err != nil {
-			return []byte{}, err
-		}
+	// Set context process id and timeout criteria
+	ctx := context.WithValue(context.Background(), contextKeyRequestID, processTypes[processType])
+	ctx, cancel := context.WithTimeout(ctx, time.Millisecond*ProcessTimeoutMilliSecs)
+	defer cancel()
 
+	// Response channel
+	resch := make(chan Response)
+
+	// Execute desired processtype
+	go func() {
+		err := ProcessTypeRegistry[processType](ctx)
+		resch <- Response{err: err}
+	}()
+
+	// Get results, errors from response channel
+	select {
+	case <-ctx.Done():
+		return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
+	case resp := <-resch:
+		if resp.err != nil {
+			return []byte{}, resp.err
+		}
 	}
 
-	// Return Merkle root from process
 	return ms.ProcessResult, nil
 }
 
