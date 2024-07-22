@@ -27,7 +27,7 @@ go get github.com/yveshoebeke/merkletree
 ### Import
 
 ```go
-import github.com/yveshoebeke/Merkletree
+import merkletree github.com/yveshoebeke/Merkletree
 ```
 
 ---
@@ -35,7 +35,7 @@ import github.com/yveshoebeke/Merkletree
 ### Execute
 
 ```go
-root, err := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding)
+root, err := merkletree.DeriveRoot(data, algorithm, processType)
 ```
 
 ---
@@ -43,7 +43,7 @@ root, err := merkletree.DeriveRoot(algorithm, data, processType, initialEncoding
 ### Signature
 
 ```go
-type Merkletree func(string, [][]byte, int, ...bool) ([]byte, error)
+type Merkletree func([][]byte, string, int) ([]byte, error)
 ```
 
 ---
@@ -68,16 +68,21 @@ go test -bench=.
 
 ### Parameters
 
-~There are 3 mandatory parameters and 1 optional.~
+~There are 3 mandatory parameters.~
 
 There are 4 mandatory parameters.
 
 They are, in order:
 
-1. algorithm
 1. data
+1. algorithm
 1. process type
-1. initiate with encoding ~(optional)~
+
+#### Data ```[][]byte```
+
+Expected data type: ```[][]byte```<sup>(2)</sup>
+
+<sup>(2)</sup>If empty will raise the *empty list* error.
 
 #### Algorithm parameter ```string```
 
@@ -101,12 +106,6 @@ Note:
 * Registry signature: ```var AlgorithmRegistry map[string]CryptoFunc```
 * Function signature: ```type CryptoFunc func([]byte) []byte```
 
-#### Data ```[][]byte```
-
-Expected data type: ```[][]byte```<sup>(2)</sup>
-
-<sup>(2)</sup>If empty will raise the *empty list* error.
-
 #### Process Type ```int```
 
 There are 3 process types that can be specified. Each one will handle unbalanced trees in it's own manner:
@@ -127,10 +126,6 @@ Notes:
 1. To the best of my knowledge at time of writing this some real world process type usage:
     * *Duplicate and Append* is used in the Bitcoin cryptocurrency/blockchain.
     * *Pass Through* is used in the Monero cryptocurrency/blockchain.
-
-#### Initiate with encodeing ```bool```
-
-Boolean. ~If not provided, will default to ```false```.~ If set to ```true``` will direct the function to initialize all data in the data parameter to be encoded with the specified hashing algorithm. To be used in case your input contains unencoded data.
 
 ---
 
