@@ -36,12 +36,12 @@ package merkletree
 
 import (
 	"context"
-	"fmt"
 	"slices"
 	"strings"
 	"time"
 )
 
+// General purpose app constants
 const (
 	NopProcess                         = -1
 	PassThrough                        = 0
@@ -56,6 +56,7 @@ var (
 	processTypes = [3]string{"PAS-THRU", "DUP-APND", "BIN-TREE"}
 )
 
+// CTX key
 type contextKey int
 
 // GO routine response
@@ -63,6 +64,7 @@ type Response struct {
 	err error
 }
 
+// Process type function signature
 type processTypeFunction func(context.Context) error
 
 // Merkle tree object
@@ -103,7 +105,7 @@ func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, ini
 	}
 
 	// Set/check process type request.
-	if processType < 0 || processType > 2 {
+	if processType < PassThrough || processType > BinaryTree {
 		return []byte{}, &InvalidProcessTypeErr{}
 	}
 
@@ -147,7 +149,8 @@ func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, ini
 	// Get results, errors from response channel
 	select {
 	case <-ctx.Done():
-		return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
+		// return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
+		return []byte{}, &ProcessTimedOutErr{ctx.Err()}
 	case resp := <-resch:
 		if resp.err != nil {
 			return []byte{}, resp.err

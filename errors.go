@@ -37,3 +37,14 @@ type InvalidContextProcessTypeErr struct {
 func (nomatchctx *InvalidContextProcessTypeErr) Error() string {
 	return fmt.Sprintf("process type does not match context: %s", nomatchctx.contextProcess)
 }
+
+// - Process timed out
+type ProcessTimedOutErr struct {
+	ctxError error
+}
+
+func (timeout *ProcessTimedOutErr) Error() string {
+	return fmt.Sprintf("timed out: %+v", timeout.ctxError)
+}
+
+// fmt.Errorf("timed out: %+w", ctx.Err())
