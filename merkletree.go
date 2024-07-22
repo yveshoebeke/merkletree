@@ -42,11 +42,21 @@ import (
 	"time"
 )
 
-type contextKey int
-
 const (
-	contextKeyRequestID contextKey = iota
+	NopProcess                         = -1
+	PassThrough                        = 0
+	DupeAppend                         = 1
+	BinaryTree                         = 2
+	ProcessTimeoutMilliSecs            = 100
+	contextKeyRequestID     contextKey = iota
 )
+
+// CTX key values
+var (
+	processTypes = [3]string{"PAS-THRU", "DUP-APND", "BIN-TREE"}
+)
+
+type contextKey int
 
 // GO routine response
 type Response struct {
@@ -73,20 +83,6 @@ Entry Point
 - Merkletree service configuration setup and start of request.
 */
 func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags bool) ([]byte, error) {
-
-	// func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
-	// ms := &MerkleServer{}
-	// 	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
-	// 	if err != nil {
-	// 		return []byte{}, err
-	// 	}
-
-	// 	return root, nil
-	// }
-
-	// func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags ...bool) ([]byte, error) {
-	// type processTypeFunction func(context.Context) error
-
 	// Check if we got something to work with.
 	if len(hashes) == 0 {
 		return []byte{}, &EmptyListErr{}
@@ -103,23 +99,21 @@ func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, ini
 		return []byte{}, &InvalidProcessTypeErr{}
 	}
 
-	// Set process flag.
-	//initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], []bool{false}[0])
-
 	// Initialize merkle pertinents.
 	ms := &MerkleServer{
-		Leaves:              hashes,
-		HashTypeID:          algorithmRequested,
-		hashGenerator:       AlgorithmRegistry[algorithmRequested],
-		ProcessType:         processType,
-		ProcessTypeRegistry: make(map[int]processTypeFunction),
-		InitWithEncoding:    initEncodingFlags,
+		Leaves:           hashes,
+		HashTypeID:       algorithmRequested,
+		hashGenerator:    AlgorithmRegistry[algorithmRequested],
+		ProcessType:      processType,
+		InitWithEncoding: initEncodingFlags,
 	}
 
-	// Process type registry
-	ms.ProcessTypeRegistry[0] = ms.processPassThroughRequest
-	ms.ProcessTypeRegistry[1] = ms.processDuplicateAndAppendRequest
-	ms.ProcessTypeRegistry[2] = ms.processBinaryTreeRequest
+	// Registe process type functions
+	ms.ProcessTypeRegistry = map[int]processTypeFunction{
+		0: ms.processPassThroughRequest,
+		1: ms.processDuplicateAndAppendRequest,
+		2: ms.processBinaryTreeRequest,
+	}
 
 	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
