@@ -68,9 +68,7 @@ go test -bench=.
 
 ### Parameters
 
-~There are 3 mandatory parameters.~
-
-There are 4 mandatory parameters.
+There are 3 mandatory parameters.
 
 They are, in order:
 
