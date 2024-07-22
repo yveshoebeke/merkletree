@@ -36,93 +36,91 @@ package merkletree
 
 import (
 	"context"
-	"fmt"
 	"slices"
 	"strings"
 	"time"
 )
 
-type contextKey int
-
+// General purpose app constants
 const (
-	contextKeyRequestID contextKey = iota
+	NopProcess                         = -1
+	PassThrough                        = 0
+	DupeAppend                         = 1
+	BinaryTree                         = 2
+	ProcessTimeoutMilliSecs            = 100
+	contextKeyRequestID     contextKey = iota
 )
+
+// CTX key values
+var (
+	processTypes = [3]string{"PAS-THRU", "DUP-APND", "BIN-TREE"}
+)
+
+// CTX key
+type contextKey int
 
 // GO routine response
 type Response struct {
 	err error
 }
 
+// Process type function signature
+type processTypeFunction func(context.Context) error
+
 // Merkle tree object
 type MerkleServer struct {
-	Leaves           [][]byte   `json:"-"`
-	HashTypeID       string     `json:"hashtype"`
-	hashGenerator    CryptoFunc `json:"-"`
-	ProcessType      int        `json:"processtype"`
-	InitWithEncoding bool       `json:"initWithEncoding"`
-	ProofRequest     bool       `json:"proofrequest"`
-	ProcessResult    []byte     `json:"root"`
-	ProofResult      []byte     `json:"proofresult"`
+	Leaves              [][]byte                    `json:"-"`
+	HashTypeID          string                      `json:"hashtype"`
+	hashGenerator       CryptoFunc                  `json:"-"`
+	ProcessType         int                         `json:"processtype"`
+	ProcessTypeRegistry map[int]processTypeFunction `json:"-"`
+	ProofRequest        bool                        `json:"proofrequest"`
+	ProcessResult       []byte                      `json:"root"`
+	ProofResult         []byte                      `json:"proofresult"`
+}
+
+// Ternary operator
+func If[T any](cond bool, trueReturn, falseReturn T) T {
+	if cond {
+		return trueReturn
+	}
+	return falseReturn
 }
 
 /*
 Entry Point
-
 - Merkletree service configuration setup and start of request.
 */
-func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
-	ms := &MerkleServer{}
-	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
-	if err != nil {
-		return []byte{}, err
-	}
-
-	return root, nil
-}
-
-func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
-	type processTypeFunction func(context.Context) error
-
-	// Check if we got something to work with.
-	if len(hashes) == 0 {
-		return []byte{}, &EmptyListErr{}
-	}
-
+func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]byte, error) {
 	// Check if requested algorithm is available.
 	algorithmRequested = strings.ToUpper(algorithmRequested)
 	if _, ok := AlgorithmRegistry[algorithmRequested]; !ok {
 		return []byte{}, &UnknownAlgorithmErr{algorithmRequested}
 	}
 
+	// Check if we got something to work with.
+	if len(hashes) == 0 {
+		return []byte{}, &EmptyListErr{}
+	}
+
 	// Set/check process type request.
-	if processType < 0 || processType > 2 {
+	if processType < PassThrough || processType > BinaryTree {
 		return []byte{}, &InvalidProcessTypeErr{}
 	}
 
-	// Set process flag.
-	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], []bool{false}[0])
-
 	// Initialize merkle pertinents.
-	ms = &MerkleServer{
-		Leaves:           hashes,
-		HashTypeID:       algorithmRequested,
-		hashGenerator:    AlgorithmRegistry[algorithmRequested],
-		ProcessType:      processType,
-		InitWithEncoding: initWithEncoding,
+	ms := &MerkleServer{
+		Leaves:        hashes,
+		HashTypeID:    algorithmRequested,
+		hashGenerator: AlgorithmRegistry[algorithmRequested],
+		ProcessType:   processType,
 	}
 
-	// Process type registry
-	ProcessTypeRegistry := map[int]processTypeFunction{
+	// Registe process type functions
+	ms.ProcessTypeRegistry = map[int]processTypeFunction{
 		0: ms.processPassThroughRequest,
 		1: ms.processDuplicateAndAppendRequest,
 		2: ms.processBinaryTreeRequest,
-	}
-
-	// Hash first branch (input hash slice) if requested.
-	if ms.InitWithEncoding {
-		for i := range ms.Leaves {
-			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
-		}
 	}
 
 	// Set context process id and timeout criteria
@@ -135,14 +133,15 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 
 	// Execute desired processtype
 	go func() {
-		err := ProcessTypeRegistry[processType](ctx)
+		err := ms.ProcessTypeRegistry[processType](ctx)
 		resch <- Response{err: err}
 	}()
 
 	// Get results, errors from response channel
 	select {
 	case <-ctx.Done():
-		return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
+		// return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
+		return []byte{}, &ProcessTimedOutErr{ctx.Err()}
 	case resp := <-resch:
 		if resp.err != nil {
 			return []byte{}, resp.err
