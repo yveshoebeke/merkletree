@@ -52,17 +52,19 @@ const (
 type Response struct {
 	err error
 }
+type processTypeFunction func(context.Context) error
 
 // Merkle tree object
 type MerkleServer struct {
-	Leaves           [][]byte   `json:"-"`
-	HashTypeID       string     `json:"hashtype"`
-	hashGenerator    CryptoFunc `json:"-"`
-	ProcessType      int        `json:"processtype"`
-	InitWithEncoding bool       `json:"initWithEncoding"`
-	ProofRequest     bool       `json:"proofrequest"`
-	ProcessResult    []byte     `json:"root"`
-	ProofResult      []byte     `json:"proofresult"`
+	Leaves              [][]byte                    `json:"-"`
+	HashTypeID          string                      `json:"hashtype"`
+	hashGenerator       CryptoFunc                  `json:"-"`
+	ProcessType         int                         `json:"processtype"`
+	ProcessTypeRegistry map[int]processTypeFunction `json:"-"`
+	InitWithEncoding    bool                        `json:"initWithEncoding"`
+	ProofRequest        bool                        `json:"proofrequest"`
+	ProcessResult       []byte                      `json:"root"`
+	ProofResult         []byte                      `json:"proofresult"`
 }
 
 /*
@@ -70,18 +72,20 @@ Entry Point
 
 - Merkletree service configuration setup and start of request.
 */
-func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
-	ms := &MerkleServer{}
-	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
-	if err != nil {
-		return []byte{}, err
-	}
+func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags bool) ([]byte, error) {
 
-	return root, nil
-}
+	// func DeriveRoot(algo string, data [][]byte, processType int, initEncode ...bool) ([]byte, error) {
+	// ms := &MerkleServer{}
+	// 	root, err := ms.GetMerkletreeRoot(algo, data, processType, initEncode)
+	// 	if err != nil {
+	// 		return []byte{}, err
+	// 	}
 
-func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags []bool) ([]byte, error) {
-	type processTypeFunction func(context.Context) error
+	// 	return root, nil
+	// }
+
+	// func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags ...bool) ([]byte, error) {
+	// type processTypeFunction func(context.Context) error
 
 	// Check if we got something to work with.
 	if len(hashes) == 0 {
@@ -100,23 +104,22 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 	}
 
 	// Set process flag.
-	initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], []bool{false}[0])
+	//initWithEncoding := If(len(initEncodingFlags) > 0, initEncodingFlags[0], []bool{false}[0])
 
 	// Initialize merkle pertinents.
-	ms = &MerkleServer{
-		Leaves:           hashes,
-		HashTypeID:       algorithmRequested,
-		hashGenerator:    AlgorithmRegistry[algorithmRequested],
-		ProcessType:      processType,
-		InitWithEncoding: initWithEncoding,
+	ms := &MerkleServer{
+		Leaves:              hashes,
+		HashTypeID:          algorithmRequested,
+		hashGenerator:       AlgorithmRegistry[algorithmRequested],
+		ProcessType:         processType,
+		ProcessTypeRegistry: make(map[int]processTypeFunction),
+		InitWithEncoding:    initEncodingFlags,
 	}
 
 	// Process type registry
-	ProcessTypeRegistry := map[int]processTypeFunction{
-		0: ms.processPassThroughRequest,
-		1: ms.processDuplicateAndAppendRequest,
-		2: ms.processBinaryTreeRequest,
-	}
+	ms.ProcessTypeRegistry[0] = ms.processPassThroughRequest
+	ms.ProcessTypeRegistry[1] = ms.processDuplicateAndAppendRequest
+	ms.ProcessTypeRegistry[2] = ms.processBinaryTreeRequest
 
 	// Hash first branch (input hash slice) if requested.
 	if ms.InitWithEncoding {
@@ -135,7 +138,7 @@ func (ms *MerkleServer) GetMerkletreeRoot(algorithmRequested string, hashes [][]
 
 	// Execute desired processtype
 	go func() {
-		err := ProcessTypeRegistry[processType](ctx)
+		err := ms.ProcessTypeRegistry[processType](ctx)
 		resch <- Response{err: err}
 	}()
 
