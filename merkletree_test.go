@@ -16,8 +16,8 @@ const (
 
 // table driven tests
 type DeriveRootTest struct {
-	arg1     string
-	arg2     [][]byte
+	arg1     [][]byte
+	arg2     string
 	arg3     int
 	arg4     bool
 	expected []byte
@@ -64,32 +64,32 @@ func TestDeriveRoot(t *testing.T) {
 	}
 	DeriveRootTests = append(DeriveRootTests,
 		DeriveRootTest{
-			arg1:     "SHA256SUM256",
-			arg2:     iWantProofRightNow0,
+			arg1:     iWantProofRightNow0,
+			arg2:     "SHA256SUM256",
 			arg3:     DupeAppend,
 			arg4:     false,
 			expected: resultSHA256SUM256_0,
 			err:      nil,
 		},
 		DeriveRootTest{
-			arg1:     "SHA256SUM256",
-			arg2:     iWantProofRightNow1,
+			arg1:     iWantProofRightNow1,
+			arg2:     "SHA256SUM256",
 			arg3:     PassThrough,
 			arg4:     false,
 			expected: resultSHA256SUM256_1,
 			err:      nil,
 		},
 		DeriveRootTest{
-			arg1:     "SHA256SUM256",
-			arg2:     iWantProofRightNow2,
+			arg1:     iWantProofRightNow2,
+			arg2:     "SHA256SUM256",
 			arg3:     BinaryTree,
 			arg4:     false,
 			expected: resultSHA256SUM256_2,
 			err:      nil,
 		},
 		DeriveRootTest{
-			arg1:     "SHA256SUM256",
-			arg2:     rawTestContent,
+			arg1:     rawTestContent,
+			arg2:     "SHA256SUM256",
 			arg3:     DupeAppend,
 			arg4:     true,
 			expected: resultSHA256SUM256_0,
@@ -102,7 +102,7 @@ func TestDeriveRoot(t *testing.T) {
 
 		// provided by the `-detail` flag (see above)
 		if *showTestResults {
-			fmt.Printf("%s\n- algorithm: %s\n-   process: %s (init. hashing: %v)\n------- got: %s\n-- expected: %s\n----- error: %v\n%s", ColorGreen, test.arg1, processName[test.arg3], test.arg4, hex.EncodeToString(output), hex.EncodeToString(test.expected), err, ColorDefault)
+			fmt.Printf("%s\n- algorithm: %s\n-   process: %s (initial hashing: %v)\n------- got: %s\n-- expected: %s\n----- error: %v\n%s", ColorGreen, test.arg2, processName[test.arg3], test.arg4, hex.EncodeToString(output), hex.EncodeToString(test.expected), err, ColorDefault)
 		}
 
 		if !bytes.Equal(output, test.expected) {
@@ -118,24 +118,24 @@ func TestDeriveRoot(t *testing.T) {
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppend(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements0, DupeAppend, false)
+		DeriveRoot(tenThousandElements0, "SHA256SUM256", DupeAppend, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256PassThrough(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements1, PassThrough, false)
+		DeriveRoot(tenThousandElements1, "SHA256SUM256", PassThrough, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256BinaryTree(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements2, BinaryTree, false)
+		DeriveRoot(tenThousandElements2, "SHA256SUM256", BinaryTree, false)
 	}
 }
 
 func BenchmarkDeriveRoot10000LeavesSHA256SUM256DupAppendInited(b *testing.B) {
 	for i := 0; i < b.N; i++ {
-		DeriveRoot("SHA256SUM256", tenThousandElements3, DupeAppend, true)
+		DeriveRoot(tenThousandElements3, "SHA256SUM256", DupeAppend, true)
 	}
 }

@@ -92,16 +92,16 @@ func If[T any](cond bool, trueReturn, falseReturn T) T {
 Entry Point
 - Merkletree service configuration setup and start of request.
 */
-func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags bool) ([]byte, error) {
-	// Check if we got something to work with.
-	if len(hashes) == 0 {
-		return []byte{}, &EmptyListErr{}
-	}
-
+func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int, initEncoding bool) ([]byte, error) {
 	// Check if requested algorithm is available.
 	algorithmRequested = strings.ToUpper(algorithmRequested)
 	if _, ok := AlgorithmRegistry[algorithmRequested]; !ok {
 		return []byte{}, &UnknownAlgorithmErr{algorithmRequested}
+	}
+
+	// Check if we got something to work with.
+	if len(hashes) == 0 {
+		return []byte{}, &EmptyListErr{}
 	}
 
 	// Set/check process type request.
@@ -115,7 +115,7 @@ func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, ini
 		HashTypeID:       algorithmRequested,
 		hashGenerator:    AlgorithmRegistry[algorithmRequested],
 		ProcessType:      processType,
-		InitWithEncoding: initEncodingFlags,
+		InitWithEncoding: initEncoding,
 	}
 
 	// Registe process type functions
