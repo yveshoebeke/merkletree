@@ -62,6 +62,7 @@ type contextKey int
 type Response struct {
 	err error
 }
+
 type processTypeFunction func(context.Context) error
 
 // Merkle tree object
@@ -77,9 +78,16 @@ type MerkleServer struct {
 	ProofResult         []byte                      `json:"proofresult"`
 }
 
+// Ternary operator
+func If[T any](cond bool, trueReturn, falseReturn T) T {
+	if cond {
+		return trueReturn
+	}
+	return falseReturn
+}
+
 /*
 Entry Point
-
 - Merkletree service configuration setup and start of request.
 */
 func DeriveRoot(algorithmRequested string, hashes [][]byte, processType int, initEncodingFlags bool) ([]byte, error) {
