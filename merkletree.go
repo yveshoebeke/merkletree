@@ -74,7 +74,6 @@ type MerkleServer struct {
 	hashGenerator       CryptoFunc                  `json:"-"`
 	ProcessType         int                         `json:"processtype"`
 	ProcessTypeRegistry map[int]processTypeFunction `json:"-"`
-	InitWithEncoding    bool                        `json:"initWithEncoding"`
 	ProofRequest        bool                        `json:"proofrequest"`
 	ProcessResult       []byte                      `json:"root"`
 	ProofResult         []byte                      `json:"proofresult"`
@@ -92,7 +91,7 @@ func If[T any](cond bool, trueReturn, falseReturn T) T {
 Entry Point
 - Merkletree service configuration setup and start of request.
 */
-func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int, initEncoding bool) ([]byte, error) {
+func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]byte, error) {
 	// Check if requested algorithm is available.
 	algorithmRequested = strings.ToUpper(algorithmRequested)
 	if _, ok := AlgorithmRegistry[algorithmRequested]; !ok {
@@ -111,11 +110,10 @@ func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int, ini
 
 	// Initialize merkle pertinents.
 	ms := &MerkleServer{
-		Leaves:           hashes,
-		HashTypeID:       algorithmRequested,
-		hashGenerator:    AlgorithmRegistry[algorithmRequested],
-		ProcessType:      processType,
-		InitWithEncoding: initEncoding,
+		Leaves:        hashes,
+		HashTypeID:    algorithmRequested,
+		hashGenerator: AlgorithmRegistry[algorithmRequested],
+		ProcessType:   processType,
 	}
 
 	// Registe process type functions
@@ -123,13 +121,6 @@ func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int, ini
 		0: ms.processPassThroughRequest,
 		1: ms.processDuplicateAndAppendRequest,
 		2: ms.processBinaryTreeRequest,
-	}
-
-	// Hash first branch (input hash slice) if requested.
-	if ms.InitWithEncoding {
-		for i := range ms.Leaves {
-			ms.Leaves[i] = ms.hashGenerator(ms.Leaves[i])
-		}
 	}
 
 	// Set context process id and timeout criteria
