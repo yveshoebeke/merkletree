@@ -6,7 +6,7 @@
 
 A hash tree, also known as a Merkle tree, is a tree in which each leaf node is labeled with the cryptographic hash of a data block, and each non-leaf, or branch, node is labeled with the cryptographic hash of its child nodes' labels.
 
-This Merkel tree function allows the user to specify certain behaviors.
+This Merkle tree function allows the user to specify certain behaviors. (See in Wiki: [General Process Flow Overview](https://github.com/yveshoebeke/merkletree/wiki/7.-General-Process-Flow-Overview))
 
 Options available:
 
@@ -48,20 +48,42 @@ type Merkletree func([][]byte, string, int) ([]byte, error)
 
 ---
 
-### Test and Benchmark
+### Test, Benchmark and Proof
+
+#### Test
 
 Standard evocation:
 
-A custom flag is provided to see a more detailed test result:
+A custom flag is provided to see a more detailed test results:
 
 ```shell
 go test -detail
 ```
 
+#### Benchmark
+
 The benchmark will give you results running through 10,000 element input slice for all 3 process types, using sha256.Sum256 encoding.
 
 ```shell
 go test -bench=.
+```
+
+#### Proof
+
+In the ```proof/``` directory is a facility that will show you the step-by-step encoding results (console output) of the various branches. It proves all three supporting processes.
+
+_In order for this to be a valid proof it does not use the ```merkletree.go``` functionality, but can be cross-checked with the results of the test since it uses the same starting data._
+
+You can invoke it as: 
+
+```shell
+go run proof/proof.go
+```
+
+Hint: For readability you might want to pipe it to a paging facility like ```less``` (in *nix/macOS): 
+
+```shell
+go run proof/proof.go | less
 ```
 
 ---
@@ -110,9 +132,9 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 |Value<sup>(3)</sup>|Process Name<sup>(4)</sup>|
 |-----------|-----------|
-|0| Pass Through]
-|1| Duplicate and Append|
-|2| Binary Tree|
+|0| [Pass Through](https://github.com/yveshoebeke/merkletree/wiki/8.-Process-Types#pass-through)|
+|1| [Duplicate and Append](https://github.com/yveshoebeke/merkletree/wiki/8.-Process-Types#duplicate-and-append)|
+|2| [Binary Tree](https://github.com/yveshoebeke/merkletree/wiki/8.-Process-Types#binary-tree)|
 
 <sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
 
