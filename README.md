@@ -54,7 +54,7 @@ type Merkletree func([][]byte, string, int) ([]byte, error)
 
 Standard evocation:
 
-A custom flag is provided to see a more detailed test results:
+A custom flag ```-detail``` is provided to see more detailed test results:
 
 ```shell
 go test -detail
