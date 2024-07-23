@@ -100,16 +100,16 @@ They are, in order:
 
 #### Data ```[][]byte```
 
-Expected data type: ```[][]byte```<sup>(2)</sup>
+Expected data type: ```[][]byte```<sup>(1)</sup>
 
-<sup>(2)</sup>If empty will raise the *empty list* error.
+<sup>(1)</sup>If empty will raise the *empty list* error.
 
 #### Algorithm parameter ```string```
 
 Accepts a string that denotes the desired hashing algorithm.
 The following functionalities are in the registry:
 
-|ID<sup>(1)</sup>  |  Resulting import     | Syntax evoked |
+|ID<sup>(2)</sup>  |  Resulting import     | Syntax evoked |
 |-------------|---------------|----------------|
 |MD5          | ```crypto/md5```| ```md5.Sum(data)```|
 |SHA1          | ```crypto/sha1``` | ```sha1.Sum(data)```|
@@ -118,7 +118,7 @@ The following functionalities are in the registry:
 |SHA512SUM256  | ```crypto/sha512``` |```sha512.Sum256(data)```|
 |SHA512SUM512  | ```crypto/sha512``` |```sha512.Sum512(data)```|
 
-<sup>(1)</sup>Will raise an *unknown hash algorithm* error if no match is found.
+<sup>(2)</sup>Will raise an *unknown hash algorithm* error if no match is found.
 
 Note:
 
