@@ -12,7 +12,7 @@ Options available:
 
 * Choose encoding algorithm
 * Specify tree creation and Unbalanced tree process type
-* Initial branch encoding option
+* ~Initial branch encoding option~
 
 ---
 
