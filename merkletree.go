@@ -27,9 +27,6 @@ package merkletree
 //
 // Helper/auxilary functions:
 //
-//	- CurrentAlgorithmUsed:
-//		Returns the hash algorithm used.
-//
 //	- removeNillBytes:
 //		Removes all empty []byte{} elements from hash slice.
 //
@@ -140,7 +137,6 @@ func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]
 	// Get results, errors from response channel
 	select {
 	case <-ctx.Done():
-		// return []byte{}, fmt.Errorf("timed out: %+w", ctx.Err())
 		return []byte{}, &ProcessTimedOutErr{ctx.Err()}
 	case resp := <-resch:
 		if resp.err != nil {
@@ -149,11 +145,6 @@ func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]
 	}
 
 	return ms.ProcessResult, nil
-}
-
-// Return the hash algorithm in use.
-func (ms *MerkleServer) CurrentAlgorithmUsed() string {
-	return ms.HashTypeID
 }
 
 // Remove elements with nill byte content and collapse slice.

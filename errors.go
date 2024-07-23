@@ -46,5 +46,3 @@ type ProcessTimedOutErr struct {
 func (timeout *ProcessTimedOutErr) Error() string {
 	return fmt.Sprintf("timed out: %+v", timeout.ctxError)
 }
-
-// fmt.Errorf("timed out: %+w", ctx.Err())
