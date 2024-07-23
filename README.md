@@ -138,7 +138,7 @@ There are 3 process types that can be specified. Each one will handle unbalanced
 
 <sup>(3)</sup>Incorrect value will raise the *invalid process type* error.
 
-<sup>(4)</sup>See [Wiki](https://github.com/yveshoebeke/merkletree/wiki) for detailed process description.
+<sup>(4)</sup>See [Wiki](https://github.com/yveshoebeke/merkletree/wiki/1.-Home) for detailed process description.
 
 Notes:
 
