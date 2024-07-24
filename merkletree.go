@@ -33,6 +33,7 @@ package merkletree
 
 import (
 	"context"
+	"fmt"
 	"slices"
 	"strings"
 	"time"
@@ -65,7 +66,7 @@ type Response struct {
 type processTypeFunction func(context.Context) error
 
 // Merkle tree object
-type MerkleServer struct {
+type MerkleService struct {
 	Leaves              [][]byte                    `json:"-"`
 	HashTypeID          string                      `json:"hashtype"`
 	hashGenerator       CryptoFunc                  `json:"-"`
@@ -81,24 +82,13 @@ Entry Point
 - Merkletree service configuration setup and start of request.
 */
 func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]byte, error) {
-	// Check if requested algorithm is available.
-	algorithmRequested = strings.ToUpper(algorithmRequested)
-	if _, ok := AlgorithmRegistry[algorithmRequested]; !ok {
-		return []byte{}, &UnknownAlgorithmErr{algorithmRequested}
-	}
-
-	// Check if we got something to work with.
-	if len(hashes) == 0 {
-		return []byte{}, &EmptyListErr{}
-	}
-
-	// Set/check process type request.
-	if processType < PassThrough || processType > BinaryTree {
-		return []byte{}, &InvalidProcessTypeErr{}
+	// Validate arguments
+	if err := validateArgs(hashes, algorithmRequested, processType); err != nil {
+		return []byte{}, err
 	}
 
 	// Initialize merkle pertinents.
-	ms := &MerkleServer{
+	ms := &MerkleService{
 		Leaves:        hashes,
 		HashTypeID:    algorithmRequested,
 		hashGenerator: AlgorithmRegistry[algorithmRequested],
@@ -139,6 +129,38 @@ func DeriveRoot(hashes [][]byte, algorithmRequested string, processType int) ([]
 	return ms.ProcessResult, nil
 }
 
+// Arguments validation
+func validateArgs(data [][]byte, algoReq string, pType int) error {
+	var (
+		validationErrs []string
+		sb             strings.Builder
+	)
+
+	// check if we got something to work with.
+	if len(data) == 0 {
+		validationErrs = append(validationErrs, "empty data")
+	}
+	// Validate existing algorithm request
+	if _, ok := AlgorithmRegistry[strings.ToUpper(algoReq)]; !ok {
+		validationErrs = append(validationErrs, "unknown algorithm")
+	}
+	// is process type within range
+	if pType < PassThrough || pType > BinaryTree {
+		validationErrs = append(validationErrs, "invalid process type")
+	}
+	// nothing detected: retrun nil
+	if len(validationErrs) == 0 {
+		return nil
+	}
+
+	// construct error message and return it
+	for _, valErr := range validationErrs {
+		sb.WriteString(fmt.Sprintf("%s - ", valErr))
+	}
+
+	return &ArgumentErr{sb.String()}
+}
+
 // Ternary operator
 func If[T any](cond bool, trueReturn, falseReturn T) T {
 	if cond {
@@ -149,8 +171,8 @@ func If[T any](cond bool, trueReturn, falseReturn T) T {
 
 // Remove elements with nill byte content and collapse slice.
 //   - ie:
-//     [12] [0] [34] [0] => [12] [34]
-func (ms *MerkleServer) removeNillBytes(processType int, startValue ...int) {
+//     [12] [nil] [34] [nil] [56] [78] => [12] [34] 56] [78]
+func (ms *MerkleService) removeNillBytes(processType int, startValue ...int) {
 	zeroStart := []int{0}
 	start := If(len(startValue) > 0, startValue[0], zeroStart[0])
 	switch processType {

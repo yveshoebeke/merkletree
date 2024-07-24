@@ -7,7 +7,7 @@ import (
 	"sort"
 )
 
-func (ms *MerkleServer) processBinaryTreeRequest(ctx context.Context) error {
+func (ms *MerkleService) processBinaryTreeRequest(ctx context.Context) error {
 	const ThisProcess = 2
 	contextProcessType := ctx.Value(contextKeyRequestID)
 	if contextProcessType != processTypes[ThisProcess] {

@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func (ms *MerkleServer) processPassThroughRequest(ctx context.Context) error {
+func (ms *MerkleService) processPassThroughRequest(ctx context.Context) error {
 	const ThisProcess = 0
 	contextProcessType := ctx.Value(contextKeyRequestID)
 	if contextProcessType != processTypes[ThisProcess] {
