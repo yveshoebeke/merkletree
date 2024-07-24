@@ -4,7 +4,7 @@ import (
 	"context"
 )
 
-func (ms *MerkleServer) processDuplicateAndAppendRequest(ctx context.Context) error {
+func (ms *MerkleService) processDuplicateAndAppendRequest(ctx context.Context) error {
 	const ThisProcess = 1
 	contextProcessType := ctx.Value(contextKeyRequestID)
 	if contextProcessType != processTypes[ThisProcess] {
